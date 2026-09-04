@@ -1,0 +1,19 @@
+services:
+  atlas-erp:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: atlas_industrial
+      POSTGRES_USER: ${ATLAS_ERP_ADMIN_USER:-atlas_admin}
+      POSTGRES_PASSWORD: ${ATLAS_ERP_ADMIN_PASSWORD:-atlas_admin_local_only}
+    ports:
+      - "127.0.0.1:5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 5s
+      timeout: 3s
+      retries: 12
+    volumes:
+      - atlas_erp_data:/var/lib/postgresql/data
+
+volumes:
+  atlas_erp_data:

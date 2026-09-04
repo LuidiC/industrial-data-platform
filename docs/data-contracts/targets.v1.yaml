@@ -1,0 +1,10 @@
+dataset: targets
+version: "1.0.0"
+description: Quality Department product rejection targets.
+logical_owner: quality_management
+grain: one product target for an effective period
+fields:
+  - {name: product_id, type: string, required: true, unique: true, description: Product reference, example: PRD-001, constraints: {}, related_dq_rules: []}
+  - {name: target_reject_rate, type: decimal, required: true, unique: false, description: Target rejection proportion, example: 0.012, constraints: {minimum: 0}, related_dq_rules: []}
+  - {name: effective_from, type: date, required: true, unique: false, description: Target effective start date, example: '2025-01-01', constraints: {}, related_dq_rules: []}
+  - {name: effective_to, type: date, required: true, unique: false, description: Target effective end date, example: '2025-12-31', constraints: {}, related_dq_rules: []}

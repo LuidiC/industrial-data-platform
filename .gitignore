@@ -43,6 +43,8 @@ data/local/
 tmp/
 temp/
 *.log
+*.dump
+*.backup
 
 # Notebook and editor artifacts
 .ipynb_checkpoints/

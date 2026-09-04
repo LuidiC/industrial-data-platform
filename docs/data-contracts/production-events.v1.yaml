@@ -1,0 +1,19 @@
+dataset: production_events
+version: "1.0.0"
+description: Monthly MES records; one completed 30-minute productive machine interval.
+logical_owner: production_operations
+grain: one completed machine interval for an order and lot
+fields:
+  - {name: event_id, type: string, required: true, unique: true, description: Stable MES event identifier, example: PEV-2025-01-000001, constraints: {pattern: '^PEV-\\d{4}-\\d{2}-\\d{6}$'}, related_dq_rules: [DQ-PROD-002, DQ-PROD-006]}
+  - {name: production_order_id, type: string, required: true, unique: false, description: AtlasERP production order reference, example: PO-2025-000001, constraints: {}, related_dq_rules: [DQ-PROD-004]}
+  - {name: batch_id, type: string, required: true, unique: false, description: Order lot reference, example: LOT-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: product_id, type: string, required: true, unique: false, description: AtlasERP product reference, example: PRD-001, constraints: {}, related_dq_rules: []}
+  - {name: line_id, type: string, required: true, unique: false, description: Production line reference, example: LINE-01, constraints: {}, related_dq_rules: []}
+  - {name: machine_id, type: string, required: true, unique: false, description: Machine that produced the interval, example: MCH-001, constraints: {}, related_dq_rules: [DQ-PROD-003]}
+  - {name: event_started_at, type: timestamp, required: true, unique: false, description: Offset-aware interval start, example: '2025-01-05T06:00:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: event_ended_at, type: timestamp, required: true, unique: false, description: Offset-aware interval end, example: '2025-01-05T06:30:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: shift, type: string, required: true, unique: false, description: Operational shift assignment, example: SHIFT-A, constraints: {allowed_values: [SHIFT-A, SHIFT-B, SHIFT-C]}, related_dq_rules: []}
+  - {name: shift_business_date, type: date, required: true, unique: false, description: Date on which the operational shift began, example: '2025-01-05', constraints: {}, related_dq_rules: []}
+  - {name: quantity_produced, type: integer, required: true, unique: false, description: Units reported as produced, example: 120, constraints: {minimum: 0}, related_dq_rules: [DQ-PROD-001]}
+  - {name: quantity_rejected, type: integer, required: true, unique: false, description: Units rejected in the interval, example: 2, constraints: {minimum: 0}, related_dq_rules: []}
+  - {name: status, type: string, required: true, unique: false, description: Source execution status, example: completed, constraints: {allowed_values: [completed]}, related_dq_rules: [DQ-PROD-005]}

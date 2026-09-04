@@ -1,0 +1,19 @@
+[simulation]
+seed = 20250101
+start_date = "2025-01-01"
+end_date = "2025-12-31"
+timezone = "America/Sao_Paulo"
+output_root = "sample-data"
+profile = "portfolio"
+
+[topology]
+line_count = 3
+machines_per_line = 4
+product_count = 8
+orders_per_month = 1
+events_per_order = 50
+
+[anomalies]
+production = 0.01
+quality = 0.05
+maintenance = 0.05

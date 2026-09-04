@@ -1,5 +1,5 @@
 catalog_version: "1.0.0"
-description: Illustrative data quality rules for planned Atlas Industrial datasets.
+description: Data quality rules for implemented synthetic Atlas Industrial source datasets.
 rules:
   - id: DQ-PROD-001
     domain: production
@@ -16,5 +16,65 @@ rules:
   - id: DQ-MAINT-001
     domain: maintenance
     description: A maintenance completion timestamp cannot precede its start timestamp.
+    severity: error
+    disposition: quarantine
+  - id: DQ-PROD-002
+    domain: production
+    description: Production event identifiers must use the documented PEV format.
+    severity: error
+    disposition: quarantine
+  - id: DQ-PROD-003
+    domain: production
+    description: Production events must reference an existing machine.
+    severity: error
+    disposition: quarantine
+  - id: DQ-PROD-004
+    domain: production
+    description: Production events must reference an existing production order.
+    severity: error
+    disposition: quarantine
+  - id: DQ-PROD-005
+    domain: production
+    description: Production event status must be completed.
+    severity: error
+    disposition: quarantine
+  - id: DQ-PROD-006
+    domain: production
+    description: Production event identifiers must be unique within a source file.
+    severity: error
+    disposition: quarantine
+  - id: DQ-QUAL-002
+    domain: quality
+    description: Quality inspection status must be PASS or FAIL after case-normalization handling.
+    severity: error
+    disposition: quarantine
+  - id: DQ-QUAL-003
+    domain: quality
+    description: Defective quantity cannot exceed inspected quantity.
+    severity: error
+    disposition: quarantine
+  - id: DQ-QUAL-004
+    domain: quality
+    description: Case-equivalent PASS or FAIL values must be normalized without quarantine.
+    severity: warning
+    disposition: observe
+  - id: DQ-QUAL-005
+    domain: quality
+    description: Quality inspection identifiers must be unique.
+    severity: error
+    disposition: quarantine
+  - id: DQ-MAINT-002
+    domain: maintenance
+    description: Maintenance events must reference an existing machine.
+    severity: error
+    disposition: quarantine
+  - id: DQ-MAINT-003
+    domain: maintenance
+    description: Reported maintenance downtime cannot be negative.
+    severity: error
+    disposition: quarantine
+  - id: DQ-MAINT-004
+    domain: maintenance
+    description: Completed corrective work orders require a failure classification.
     severity: error
     disposition: quarantine

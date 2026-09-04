@@ -20,17 +20,24 @@ examples are synthetic; no planned capability is presented as implemented.
 - Quarantine strategy for critically invalid records.
 - Tests for YAML standards and minimal CI for linting, formatting, and tests.
 
+### Implemented — Phase 2
+
+- Deterministic synthetic industrial source ecosystem for 2025.
+- Local PostgreSQL AtlasERP through Docker Compose, monthly MES CSV, Quality XLSX, and read-only
+  MaintControl REST/JSON API.
+- Six deliberately simple technical PDFs for a future Bronze-only unstructured source.
+- Controlled DQ anomalies with an external manifest, contracts, samples, and PostgreSQL integration
+  tests in CI.
+- Contracts for all ten outputs validate types, requiredness, uniqueness, enums, and DQ semantics
+  in the clean baseline; syntactically valid unknown machine API filters return `200` with
+  `data: []`.
+
 The `Industrial Data Platform - Lakehouse Analytics` workspace and the three Lakehouses already
 exist and were created manually. Phase 1 does not implement ingestion or processing in them.
 
 ### Planned
 
-- Synthetic operational data with controlled, documented anomalies.
-- Incremental ingestion of CSV files from the MES simulator.
-- Reading XLSX workbooks from the quality department.
-- Local PostgreSQL-based AtlasERP.
-- Fictional MaintControl REST/JSON API.
-- Preservation of technical PDF documents in Bronze.
+- Incremental Fabric ingestion of CSV, XLSX, PostgreSQL, REST/JSON, and PDF sources.
 - Bronze → Silver transformation with validation and quarantine.
 - Silver → Gold business rules and analytical modeling.
 - Power BI semantic layer and reports.
@@ -46,7 +53,7 @@ exist and were created manually. Phase 1 does not implement ingestion or process
 
 ```mermaid
 flowchart LR
-    SOURCES[Planned sources<br/>CSV · XLSX · PostgreSQL · REST/JSON] --> INGEST[Planned ingestion]
+    SOURCES[Implemented synthetic sources<br/>CSV · XLSX · PostgreSQL · REST/JSON] --> INGEST[Planned ingestion]
     INGEST --> BRONZE[(lh_bronze<br/>Preservation)]
     PDF[Technical PDFs] --> INGEST
     BRONZE --> SILVER[(lh_silver<br/>Validation and conformance)]
@@ -67,13 +74,13 @@ not participate in the tabular Silver → Gold flow.
 
 Read the [complete architecture overview](docs/architecture/overview.md).
 
-## Planned sources
+## Implemented sources
 
 | Fictional system | Technology | Domain |
 |---|---|---|
 | MES Simulator | Periodic CSV | Production events |
 | Quality Department | XLSX | Quality inspections |
-| AtlasERP | PostgreSQL | Machines, products, orders, and suppliers |
+| AtlasERP | PostgreSQL | Lines, machines, products, and orders |
 | MaintControl | REST / JSON | Maintenance and work orders |
 | Technical Documents | PDF | Reports and technical documents |
 
@@ -85,6 +92,7 @@ Read the [complete architecture overview](docs/architecture/overview.md).
 - [Data Quality and quarantine strategy](docs/data-quality/strategy.md)
 - [Data Contract convention](docs/data-contracts/README.md)
 - [Observability strategy](docs/observability/strategy.md)
+- [Phase 2 source ecosystem](docs/sources/source-ecosystem.md)
 - [Agent and contributor guide](AGENTS.md)
 
 ## Local development
@@ -99,8 +107,8 @@ ruff format --check .
 pytest
 ```
 
-The project has development dependencies only in this phase. No Python package or industrial
-processing logic is implemented.
+Run `python -m pip install -e . --group dev`, `atlas-sim generate`, and read
+[`docs/sources/source-ecosystem.md`](docs/sources/source-ecosystem.md) for local reproduction.
 
 ## Security and data
 

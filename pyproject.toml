@@ -1,5 +1,29 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "atlas-industrial-simulator"
+version = "0.1.0"
+description = "Deterministic synthetic industrial source ecosystem for Atlas Industrial Manufacturing."
+requires-python = ">=3.13"
+dependencies = [
+    "fastapi==0.115.12",
+    "openpyxl==3.1.5",
+    "psycopg[binary]==3.2.6",
+    "reportlab==4.4.0",
+    "uvicorn==0.34.2",
+]
+
+[project.scripts]
+atlas-sim = "atlas_simulator.cli:main"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
 [dependency-groups]
 dev = [
+    "httpx==0.28.1",
     "pytest==9.1.1",
     "PyYAML==6.0.3",
     "ruff==0.16.6",
@@ -15,3 +39,6 @@ select = ["E4", "E7", "E9", "F", "I", "UP", "B"]
 [tool.pytest.ini_options]
 addopts = ["-ra", "--strict-config", "--strict-markers"]
 testpaths = ["tests"]
+markers = [
+    "integration: tests requiring a configured PostgreSQL database",
+]
