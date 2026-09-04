@@ -1,0 +1,11 @@
+dataset: defect_types
+version: "1.0.0"
+description: Quality Department defect type reference sheet.
+logical_owner: quality_management
+grain: one defect type
+fields:
+  - {name: defect_code, type: string, required: true, unique: true, description: Stable defect identifier, example: DEF-001, constraints: {}, related_dq_rules: []}
+  - {name: description, type: string, required: true, unique: true, description: Defect description, example: Surface scratch, constraints: {}, related_dq_rules: []}
+  - {name: category, type: string, required: true, unique: false, description: Defect category, example: surface, constraints: {}, related_dq_rules: []}
+  - {name: severity, type: string, required: true, unique: false, description: Defect severity, example: low, constraints: {allowed_values: [low, medium, high]}, related_dq_rules: []}
+  - {name: active, type: boolean, required: true, unique: false, description: Whether the reference type is active, example: true, constraints: {}, related_dq_rules: []}

@@ -6,15 +6,15 @@ Atlas Industrial Manufacturing is a fictional organization used to demonstrate a
 industrial data platform without real company data. The target platform is Microsoft Fabric.
 
 The Fabric workspace `Industrial Data Platform - Lakehouse Analytics` and the Lakehouses
-`lh_bronze`, `lh_silver`, and `lh_gold` already exist and were created manually. Phase 1 adds only
-the repository and architectural foundation. Ingestion, transformation, serving models, and source
-simulators remain planned.
+`lh_bronze`, `lh_silver`, and `lh_gold` already exist and were created manually. Phase 1 added the
+repository and architectural foundation. Phase 2 implements the synthetic source ecosystem locally.
+Fabric ingestion, transformation, and serving models remain planned.
 
 ## Logical data flow
 
 ```mermaid
 flowchart TB
-    subgraph Sources[Planned source systems]
+    subgraph Sources[Implemented synthetic source systems]
         MES[MES simulator<br/>Periodic CSV files]
         QUALITY[Quality department<br/>XLSX workbooks]
         ERP[AtlasERP<br/>PostgreSQL]
@@ -102,7 +102,8 @@ or security requirements.
   22:00 to 06:00.
 - Approximately 12 months of synthetic operational history.
 
-These are planning assumptions, not implemented datasets or final cardinalities.
+These are implemented simulator defaults; topology and scale remain configuration values rather than
+claims about a real facility.
 
 ## Explicitly deferred decisions
 

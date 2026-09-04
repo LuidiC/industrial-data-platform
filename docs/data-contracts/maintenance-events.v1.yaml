@@ -1,0 +1,15 @@
+dataset: maintenance_events
+version: "1.0.0"
+description: MaintControl effective maintenance and downtime events.
+logical_owner: maintenance_operations
+grain: one effective maintenance event
+fields:
+  - {name: maintenance_event_id, type: string, required: true, unique: true, description: Stable event identifier, example: MNT-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: work_order_id, type: string, required: true, unique: true, description: Related work order reference, example: WO-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: machine_id, type: string, required: true, unique: false, description: Affected machine reference, example: MCH-001, constraints: {}, related_dq_rules: [DQ-MAINT-002]}
+  - {name: started_at, type: timestamp, required: true, unique: false, description: Offset-aware maintenance start, example: '2025-01-05T06:00:00-03:00', constraints: {}, related_dq_rules: [DQ-MAINT-001]}
+  - {name: ended_at, type: timestamp, required: true, unique: false, description: Offset-aware maintenance end, example: '2025-01-05T09:00:00-03:00', constraints: {}, related_dq_rules: [DQ-MAINT-001]}
+  - {name: downtime_minutes, type: integer, required: true, unique: false, description: Source-reported downtime duration, example: 180, constraints: {minimum: 0}, related_dq_rules: [DQ-MAINT-003]}
+  - {name: maintenance_type, type: string, required: true, unique: false, description: Maintenance category, example: preventive, constraints: {allowed_values: [preventive, corrective]}, related_dq_rules: []}
+  - {name: failure_classification, type: string, required: false, unique: false, description: Corrective failure classification, example: mechanical, constraints: {}, related_dq_rules: []}
+  - {name: updated_at, type: timestamp, required: true, unique: false, description: Source last-update time, example: '2025-01-05T09:00:00-03:00', constraints: {}, related_dq_rules: []}

@@ -1,0 +1,15 @@
+dataset: work_orders
+version: "1.0.0"
+description: MaintControl administrative work orders.
+logical_owner: maintenance_operations
+grain: one maintenance work order
+fields:
+  - {name: work_order_id, type: string, required: true, unique: true, description: Stable work order identifier, example: WO-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: machine_id, type: string, required: true, unique: false, description: Machine reference, example: MCH-001, constraints: {}, related_dq_rules: []}
+  - {name: maintenance_type, type: string, required: true, unique: false, description: Maintenance category, example: preventive, constraints: {allowed_values: [preventive, corrective]}, related_dq_rules: []}
+  - {name: priority, type: string, required: true, unique: false, description: Operational priority, example: normal, constraints: {allowed_values: [normal, high]}, related_dq_rules: []}
+  - {name: status, type: string, required: true, unique: false, description: Work order lifecycle state, example: completed, constraints: {allowed_values: [completed, cancelled]}, related_dq_rules: []}
+  - {name: opened_at, type: timestamp, required: true, unique: false, description: Offset-aware opening time, example: '2025-01-03T06:00:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: planned_start, type: timestamp, required: true, unique: false, description: Planned maintenance start, example: '2025-01-05T06:00:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: closed_at, type: timestamp, required: true, unique: false, description: Lifecycle closure time, example: '2025-01-05T09:00:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: failure_classification, type: string, required: false, unique: false, description: Corrective failure classification, example: mechanical, constraints: {}, related_dq_rules: [DQ-MAINT-004]}

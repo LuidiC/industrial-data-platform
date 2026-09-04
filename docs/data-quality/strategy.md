@@ -68,3 +68,11 @@ Future synthetic datasets may include controlled duplicates, missing required va
 references, inconsistent casing, malformed identifiers, invalid statuses, impossible timestamps,
 and negative quantities. Each injected case must declare its expected rule and disposition so tests
 can distinguish an intentional defect from generator failure.
+
+## Phase 2 anomaly manifest
+
+The Phase 2 simulator writes a separate JSON anomaly manifest containing the generator version,
+configuration seed, period, source row counts, affected record identifier, field, injected value,
+and expected DQ rule. It is test metadata rather than a source dataset and must remain outside the
+source folders selected by future ingestion. The manifest does not authorize correcting source
+records before Bronze preservation.

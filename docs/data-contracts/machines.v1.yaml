@@ -1,0 +1,11 @@
+dataset: machines
+version: "1.0.0"
+description: AtlasERP machine master records.
+logical_owner: production_operations
+grain: one machine
+fields:
+  - {name: machine_id, type: string, required: true, unique: true, description: Stable machine identifier, example: MCH-001, constraints: {}, related_dq_rules: []}
+  - {name: line_id, type: string, required: true, unique: false, description: Owning production line, example: LINE-01, constraints: {}, related_dq_rules: []}
+  - {name: machine_name, type: string, required: true, unique: true, description: Machine display name, example: LINE-01 Station 1, constraints: {}, related_dq_rules: []}
+  - {name: machine_type, type: string, required: true, unique: false, description: Industrial machine category, example: assembly, constraints: {allowed_values: [assembly, press, inspection, packaging]}, related_dq_rules: []}
+  - {name: status, type: string, required: true, unique: false, description: Machine state, example: active, constraints: {allowed_values: [active, maintenance]}, related_dq_rules: []}

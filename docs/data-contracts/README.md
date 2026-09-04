@@ -4,9 +4,9 @@ Data contracts are lightweight, version-controlled YAML documents. They describe
 logical interface between a source or producer and platform processing; they do not prescribe a
 physical Lakehouse model.
 
-Phase 1 includes a reusable [`contract-template.yaml`](contract-template.yaml) and an illustrative,
-non-final [`production_events` example](examples/production-events.v1.yaml). The example documents
-the convention but does not freeze the future MES schema.
+The repository includes a reusable [`contract-template.yaml`](contract-template.yaml) and concrete
+Phase 2 source contracts. The MES [`production_events` contract](production-events.v1.yaml)
+documents the generated monthly source interface.
 
 Every `.yaml` file discovered recursively under `docs/data-contracts/`, except
 `contract-template.yaml`, is treated as a concrete Data Contract and must satisfy repository

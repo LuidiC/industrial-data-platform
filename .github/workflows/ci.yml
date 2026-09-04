@@ -12,6 +12,22 @@ jobs:
   quality:
     name: Repository quality
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:17-alpine
+        env:
+          POSTGRES_DB: atlas_industrial
+          POSTGRES_USER: atlas_app
+          POSTGRES_PASSWORD: atlas_ci_only
+        options: >-
+          --health-cmd "pg_isready -U atlas_app -d atlas_industrial"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+        ports:
+          - 5432:5432
+    env:
+      ATLAS_ERP_TEST_DSN: postgresql://atlas_app:atlas_ci_only@localhost:5432/atlas_industrial
 
     steps:
       - name: Check out repository
@@ -25,7 +41,7 @@ jobs:
       - name: Install development dependencies
         run: |
           python -m pip install --upgrade pip
-          python -m pip install --group dev
+          python -m pip install -e . --group dev
 
       - name: Lint
         run: ruff check .

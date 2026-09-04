@@ -1,0 +1,16 @@
+dataset: inspections
+version: "1.0.0"
+description: Quality Department workbook inspection samples.
+logical_owner: quality_management
+grain: one quality inspection sample
+fields:
+  - {name: inspection_id, type: string, required: true, unique: true, description: Stable inspection identifier, example: QIN-2025-000001, constraints: {}, related_dq_rules: [DQ-QUAL-001, DQ-QUAL-005]}
+  - {name: inspection_timestamp, type: timestamp, required: true, unique: false, description: Offset-aware inspection time, example: '2025-01-05T06:30:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: production_order_id, type: string, required: true, unique: false, description: Inspected order reference, example: PO-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: batch_id, type: string, required: true, unique: false, description: Inspected lot reference, example: LOT-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: product_id, type: string, required: true, unique: false, description: Inspected product reference, example: PRD-001, constraints: {}, related_dq_rules: []}
+  - {name: machine_id, type: string, required: true, unique: false, description: Inspected machine reference, example: MCH-001, constraints: {}, related_dq_rules: []}
+  - {name: inspected_quantity, type: integer, required: true, unique: false, description: Sample size, example: 40, constraints: {minimum: 0}, related_dq_rules: [DQ-QUAL-003]}
+  - {name: defective_quantity, type: integer, required: true, unique: false, description: Defective units in sample, example: 2, constraints: {minimum: 0}, related_dq_rules: [DQ-QUAL-003]}
+  - {name: quality_status, type: string, required: true, unique: false, description: Canonical status is PASS or FAIL; case equivalents are normalization warnings, example: PASS, constraints: {canonical_allowed_values: [PASS, FAIL]}, related_dq_rules: [DQ-QUAL-002, DQ-QUAL-004]}
+  - {name: defect_code, type: string, required: false, unique: false, description: Defect category when inspection fails, example: DEF-001, constraints: {}, related_dq_rules: []}

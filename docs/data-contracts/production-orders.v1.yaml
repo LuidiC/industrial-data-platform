@@ -1,0 +1,14 @@
+dataset: production_orders
+version: "1.0.0"
+description: AtlasERP production order and lot records.
+logical_owner: production_operations
+grain: one production order with one lot
+fields:
+  - {name: production_order_id, type: string, required: true, unique: true, description: Stable order identifier, example: PO-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: batch_id, type: string, required: true, unique: true, description: Stable lot identifier, example: LOT-2025-000001, constraints: {}, related_dq_rules: []}
+  - {name: product_id, type: string, required: true, unique: false, description: Ordered product reference, example: PRD-001, constraints: {}, related_dq_rules: []}
+  - {name: line_id, type: string, required: true, unique: false, description: Scheduled line reference, example: LINE-01, constraints: {}, related_dq_rules: []}
+  - {name: planned_quantity, type: integer, required: true, unique: false, description: Planned unit quantity, example: 10000, constraints: {minimum: 1}, related_dq_rules: []}
+  - {name: scheduled_start, type: timestamp, required: true, unique: false, description: Scheduled operational start, example: '2025-01-05T06:00:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: scheduled_end, type: timestamp, required: true, unique: false, description: Scheduled operational end, example: '2025-01-07T08:00:00-03:00', constraints: {}, related_dq_rules: []}
+  - {name: status, type: string, required: true, unique: false, description: Order state, example: completed, constraints: {allowed_values: [completed]}, related_dq_rules: []}
