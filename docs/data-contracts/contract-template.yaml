@@ -1,0 +1,13 @@
+dataset: replace_with_dataset_name
+version: "1.0.0"
+description: Replace with a concise description of the dataset and its business purpose.
+logical_owner: replace_with_logical_owner
+fields:
+  - name: replace_with_field_name
+    type: string
+    required: true
+    unique: false
+    description: Replace with the field meaning.
+    example: synthetic-example
+    constraints: {}
+    related_dq_rules: []

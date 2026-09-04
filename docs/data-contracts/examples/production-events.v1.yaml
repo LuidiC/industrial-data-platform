@@ -1,0 +1,49 @@
+dataset: production_events
+version: "1.0.0"
+description: >-
+  Illustrative, non-final contract for production events planned for the MES simulator.
+logical_owner: production_operations
+fields:
+  - name: event_id
+    type: string
+    required: true
+    unique: true
+    description: Synthetic identifier for a production event.
+    example: EVT-2026-000001
+
+  - name: machine_id
+    type: string
+    required: true
+    unique: false
+    description: Synthetic identifier of the machine that emitted the event.
+    example: MACHINE-01
+
+  - name: event_timestamp
+    type: timestamp
+    required: true
+    unique: false
+    description: Timestamp when the production event occurred.
+    example: "2026-01-05T06:15:00Z"
+
+  - name: quantity_produced
+    type: integer
+    required: true
+    unique: false
+    description: Number of units reported by the event.
+    example: 120
+    constraints:
+      minimum: 0
+    related_dq_rules:
+      - DQ-PROD-001
+
+  - name: status
+    type: string
+    required: true
+    unique: false
+    description: Source-reported state of the production event.
+    example: completed
+    constraints:
+      allowed_values:
+        - started
+        - completed
+        - interrupted

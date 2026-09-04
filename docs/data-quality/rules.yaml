@@ -1,0 +1,20 @@
+catalog_version: "1.0.0"
+description: Illustrative data quality rules for planned Atlas Industrial datasets.
+rules:
+  - id: DQ-PROD-001
+    domain: production
+    description: Production quantity must be greater than or equal to zero.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-QUAL-001
+    domain: quality
+    description: Every quality inspection must have a non-empty inspection identifier.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-MAINT-001
+    domain: maintenance
+    description: A maintenance completion timestamp cannot precede its start timestamp.
+    severity: error
+    disposition: quarantine
