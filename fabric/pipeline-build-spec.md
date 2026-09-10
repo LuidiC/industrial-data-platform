@@ -121,8 +121,101 @@ orchestration; none is added for this stable synthetic demonstration.
 
 Parameters: `base_url`, `bearer_token`, `extraction_date`, `occurred_from`, `occurred_to`,
 `page_size` (default `500`), and `parent_execution_id`. Mark `base_url` and `bearer_token` secure;
-populate them from externally managed values, never source or logs. The pipeline is build-ready but
-live execution and connection creation remain pending tunnel-provider authorization.
+populate them from externally managed values, never source or logs. For the authorized demo, the
+base URL is the current ephemeral Cloudflare Quick Tunnel URL and the truthful transport value is
+`maintcontrol_https`. Neither value is committed.
+
+Create or update `cn_rest_maintcontrol` for each Quick Tunnel session with the current HTTPS base
+URL, no gateway, and Anonymous connector authentication. Authentication of the source itself is the
+pipeline's bearer header. Mark the Copy activity `secureInput=true` and `secureOutput=true`; do not
+place the header in audit details or pipeline annotations. The `base_url` parameter records which
+ephemeral origin a run targeted, while the Fabric connection must be kept in sync with it.
+
+Use these parameters and variables:
+
+| Name | Type/default | Purpose |
+|---|---|---|
+| `base_url` | String, no committed default | Current `https://*.trycloudflare.com` URL |
+| `bearer_token` | String, no default | Runtime-only token; treat as secure |
+| `extraction_date` | String, current UTC date supplied at invocation | Stable snapshot identity for a run/rerun pair |
+| `occurred_from` | String, `2025-01-01T00:00:00-03:00` | Inclusive demo window start |
+| `occurred_to` | String, `2025-12-31T23:59:59-03:00` | Inclusive demo window end |
+| `page_size` | Integer, `500` | Maximum supported API page size |
+| `parent_execution_id` | String, empty | Parent pipeline run ID when orchestrated |
+| `maintcontrol_candidates` | Array | Two preflight candidates |
+| `copy_results` | Array | Batched finalize input |
+| `copy_failed` | Boolean, `false` | Final failure marker |
+
+The exact top-level graph is:
+
+```text
+set_maintcontrol_candidates
+  -> nb_preflight_maintcontrol
+      -> filter_ingest_maintcontrol
+          -> copy_ingest_maintcontrol (sequential ForEach)
+              -> nb_finalize_maintcontrol
+                  -> if_fail_maintcontrol
+      -> filter_blocking_maintcontrol ----------------------^
+```
+
+`set_maintcontrol_candidates` creates two objects. For `work_orders`, use:
+
+```json
+{
+  "execution_id": "@pipeline().RunId",
+  "parent_execution_id": "@if(empty(pipeline().parameters.parent_execution_id),null,pipeline().parameters.parent_execution_id)",
+  "pipeline_name": "pl_ingest_maintcontrol",
+  "source_system": "maintcontrol",
+  "source_object": "work_orders",
+  "source_identity_key": "maintcontrol|work_orders|<extraction_date>",
+  "source_file": "work_orders_<extraction_date>.json",
+  "source_period": "<extraction_date>",
+  "transport_source": "maintcontrol_https",
+  "batch_id": "<pipeline-run-id>-work-orders",
+  "destination_path": "Files/raw/maintcontrol/work_orders/extract_date=<extraction_date>/batch_id=<batch-id>/work_orders_<extraction_date>.json",
+  "force_reprocess": false,
+  "replay_of_batch_id": null,
+  "extract_window_start": "<occurred_from>",
+  "extract_window_end": "<occurred_to>",
+  "details": {"endpoint":"work-orders","snapshot_identity_model":"stable_demo_window"}
+}
+```
+
+The `maintenance_events` object uses the same fields with `maintenance_events`, endpoint
+`maintenance-events`, and batch suffix `maintenance-events`. Do not supply `content_sha256` or
+`source_size_bytes`: this transport uses snapshot-identity idempotency, not source-content change
+detection. The notebook mappings are:
+
+| Activity | `mode` | `payload_json` | `copy_results_json` | `stale_after_hours` |
+|---|---|---|---|---|
+| `nb_preflight_maintcontrol` | `preflight` | `@string(variables('maintcontrol_candidates'))` | `[]` | `2` |
+| `nb_finalize_maintcontrol` | `finalize` | `[]` | `@string(variables('copy_results'))` | `2` |
+
+Both notebook activities use `nb_bronze_ingestion_audit`, the default `lh_bronze`, and
+`cn_notebook_workspace_identity`. Parse the preflight plan from
+`@json(activity('nb_preflight_maintcontrol').output.result.exitValue).plan`. Filter INGEST with
+`@equals(item().action,'INGEST')`; filter blocking decisions with
+`@or(equals(item().action,'CONFLICT'),equals(item().action,'BLOCK'))`.
+
+`copy_ingest_maintcontrol` iterates sequentially over the INGEST filter. Its REST Copy uses
+`cn_rest_maintcontrol`, GET, a relative URL based on `item().details.endpoint`, the two encoded
+occurrence-window query parameters, and `page_size`. Supply the runtime header as
+`Authorization = @concat('Bearer ',pipeline().parameters.bearer_token)`. Configure pagination rule
+`QueryParameters.cursor = $.pagination.next_cursor`; the connector stops when that JSONPath is
+null. Use a JSON sink in `lh_bronze` at the exact `item().destination_path`, with no schema mapping,
+business transformation, or Silver table.
+
+The synthetic acceptance data contains 180 work orders and 165 maintenance events, so
+`page_size=500` produces one complete source envelope per object. Before accepting a different or
+mutable source, verify how Fabric serializes multiple REST response envelopes. Use the documented
+notebook pagination fallback only if live evidence shows that Copy cannot preserve the required raw
+representation.
+
+On Copy success, append one result containing `audit_id`, `destination_path`, status `SUCCEEDED`,
+available row/file metrics, null error fields, and sanitized details. On failure, append status
+`FAILED`, sanitized `error_code`/`error_message`, and set `copy_failed=true`. Finalize once after the
+ForEach completes. After finalize, fail the pipeline when `copy_failed` is true or the blocking
+filter is nonempty.
 
 For each endpoint, Copy performs HTTPS `GET`, sends `Authorization: Bearer <token>`, and uses
 `cursor` pagination until `pagination.next_cursor` is null. Both endpoints send
@@ -145,6 +238,15 @@ Parameters: `run_atlas_erp`, `run_mes`, `run_quality`, `run_maintcontrol`,
 AtlasERP, MES, Quality, MaintControl, technical documents. MaintControl defaults to disabled while
 its live connection is pending. The parent passes its pipeline run ID as `parent_execution_id` and
 does not invoke the notebook itself.
+
+Build five sequential `If Condition` activities named `if_run_atlas_erp`, `if_run_mes`,
+`if_run_quality`, `if_run_maintcontrol`, and `if_run_technical_documents`. Each condition reads its
+matching Boolean parameter and its true branch contains one Execute Pipeline activity with
+`waitOnCompletion=true`. Chain each top-level condition to the preceding condition's Succeeded
+dependency so a failed child stops later sources. Pass `@pipeline().RunId` as
+`parent_execution_id`. Pass each child's existing source parameters unchanged; MaintControl also
+receives the runtime URL/token/window and remains disabled by default until its current Quick Tunnel
+connection has passed a smoke test. The orchestrator contains no notebook, Copy, or Silver activity.
 
 ## Connections
 

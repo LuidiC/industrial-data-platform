@@ -3,31 +3,32 @@
 This file records what was actually demonstrated in the Fabric tenant. It must not infer live
 success from repository artifacts or planned configuration.
 
-## Tenant execution on 2026-09-04
+## Tenant execution status through 2026-09-09
 
 | Check | Result | Evidence |
 |---|---|---|
 | SharePoint Online File PoC | Not executable; no pass claimed | No tenant site, library, folder, or representative source objects were supplied |
 | OneLake demo staging fallback | Demonstrated for MES | `transport_source=onelake_demo_staging`; 2025-01 through 2026-01 source files were read from `Files/_demo_source_staging/mes` and copied byte-for-byte to immutable Bronze batches |
 | `ingestion_audit` Delta table | Passed initialization | Notebook `a3f33829-2a79-460f-8b45-9cf25a355041` attached to `lh_bronze`; output `{"status":"READY","table":"ingestion_audit"}` at 2026-09-04 19:40:18 UTC |
-| Six pipeline items | Created; MES configured | `pl_ingest_mes` is implemented and validated; the other five source/orchestration items remain unchanged shells |
+| Six pipeline items | Created | MES, Quality, Technical Documents, and AtlasERP were subsequently accepted; MaintControl and the orchestrator remain |
 | MES initial/rerun/new-month/conflict/replay | Passed in Fabric | Live run IDs and immutable Bronze/audit evidence are recorded below |
-| Quality XLSX | Local binary/structure validation passed; Fabric Copy pending | 72 `Inspections`, 12 `DefectTypes`, 8 `Targets`; SHA-256 `ab67c7d93e1f297c8c15dd5fb652507da0acb1c7f3252a2dae3a86608d104b13` |
-| Six technical PDFs | Local binary validation passed; Fabric Copy pending | Six unique PDF binaries, 11,744 bytes total, all with `%PDF-` signature; no OCR performed |
-| AtlasERP four-table snapshot | Pending gateway/source availability | Docker was unavailable and no gateway PostgreSQL connection or rotated reader credential was supplied; stable-source limitation remains documented |
+| Quality XLSX | Accepted in Fabric; run IDs still need capture here | Operator confirmed initial success and idempotent rerun; local structure/hash evidence remains below |
+| Six technical PDFs | Accepted in Fabric; run IDs still need capture here | Operator confirmed initial success and idempotent rerun; no OCR or parsing was introduced |
+| AtlasERP four-table snapshot | Accepted in Fabric; run IDs still need capture here | Operator confirmed 4 `SUCCEEDED` then 4 `SKIPPED_ALREADY_INGESTED`; source used PostgreSQL on host port 55433 through the installed gateway |
 | MaintControl contract/fixtures | Local readiness passed; live snapshot pending | API contract includes bearer auth, pagination and inclusive occurrence-window filters; fixture counts are 180 work orders and 165 maintenance events |
-| MaintControl tunnel boundary | Preserved | No tunneling software installed or invoked; no REST connection created |
+| MaintControl local/API boundary | Passed locally on 2026-09-09 | Loopback API on port 8001 returned HTTP 200 for both endpoints and HTTP 401 for missing/invalid bearer tokens |
+| MaintControl Quick Tunnel | Tool verified; public test blocked | Official `cloudflared` 2026.8.3 binary passed its published SHA-256 check in ignored `tmp/tools`; the execution environment blocked opening a public tunnel, so no HTTPS/Fabric success is claimed |
 
 ## Created Fabric items
 
 | Item | Fabric item ID | State |
 |---|---|---|
 | `nb_bronze_ingestion_audit` | `a3f33829-2a79-460f-8b45-9cf25a355041` | Code loaded, parameter cell marked, Lakehouse attached, initialization passed |
-| `pl_ingest_atlas_erp` | `5746b71f-32dc-4b1b-bfe0-fe2bfef633f6` | Empty shell; not runnable |
+| `pl_ingest_atlas_erp` | `5746b71f-32dc-4b1b-bfe0-fe2bfef633f6` | Implemented and accepted; run IDs pending capture in this file |
 | `pl_ingest_mes` | `b9645bcc-46ac-42a7-9d91-60d085944a08` | Implemented, validated, and live acceptance-tested with OneLake demo staging |
-| `pl_ingest_quality` | `b2ffed46-38fb-4a67-97d6-7873a183979b` | Empty shell; not runnable |
+| `pl_ingest_quality` | `9ee7b72b-2544-4296-8985-7ec1a7d4e64e` | Implemented and accepted; run IDs pending capture in this file |
 | `pl_ingest_maintcontrol` | `3d68708a-8a58-4311-a716-ff398027c748` | Empty shell; not runnable |
-| `pl_ingest_technical_documents` | `1cfe1200-0e62-49c9-8d38-f7522be548e9` | Empty shell; not runnable |
+| `pl_ingest_technical_documents` | `1cfe1200-0e62-49c9-8d38-f7522be548e9` | Implemented and accepted; run IDs pending capture in this file |
 | `pl_ingest_all_sources` | `559fcda5-e92b-4014-a381-3981fcb0c6fe` | Empty shell; not runnable |
 
 The workspace identity was enabled and granted only the Contributor workspace role. Notebook
@@ -37,8 +38,9 @@ Workspace Identity authentication. Its isolated activity test succeeded as run
 secret, or Key Vault was created.
 
 Local fixture checks remain reproducible validation evidence rather than substitutes for Fabric
-runs. MES now has the live evidence below. Quality, PDF, AtlasERP, and MaintControl still have no
-successful source-pipeline Bronze landing claimed here.
+runs. MES has the complete live evidence below. Quality, Technical Documents, and AtlasERP are
+recorded as operator-confirmed acceptance until their exact Fabric run IDs are recovered; this file
+does not invent them. MaintControl still has no successful source-pipeline Bronze landing.
 
 ## MES live acceptance on 2026-09-07
 

@@ -99,9 +99,31 @@ locks, exported snapshots, or transaction orchestration to this demo.
 
 ## MaintControl operational interface
 
-Live execution is pending separate tunnel-provider authorization. Do not install or invoke
-Cloudflare Quick Tunnel, ngrok, devtunnel, or another tunnel. When authorized, the provider must
-expose:
+The approved demo transport is a temporary Cloudflare Quick Tunnel. It exposes the loopback-bound
+synthetic API through an ephemeral HTTPS URL; it is not a production deployment pattern. Start the
+two foreground processes from separate PowerShell sessions without putting the token on a command
+line:
+
+```powershell
+$env:MAINTCONTROL_API_TOKEN = Read-Host "MaintControl demo token"
+.\scripts\start-maintcontrol-api.ps1
+```
+
+```powershell
+.\scripts\start-maintcontrol-quick-tunnel.ps1
+```
+
+Copy the displayed `https://*.trycloudflare.com` URL into the Fabric connection or secure pipeline
+parameter for the current session only. It expires or changes whenever the Quick Tunnel restarts.
+Keep the API bound to `127.0.0.1`; the tunnel forwards to `http://127.0.0.1:8001`. Verify locally or
+through the ephemeral URL with:
+
+```powershell
+$env:MAINTCONTROL_API_TOKEN = Read-Host "MaintControl demo token"
+.\scripts\test-maintcontrol-endpoints.ps1 -BaseUrl "https://current-url.trycloudflare.com"
+```
+
+The provider must expose:
 
 - an HTTPS base URL with a valid certificate;
 - `GET /api/v1/work-orders` and `GET /api/v1/maintenance-events`;
@@ -116,8 +138,16 @@ and activity output secure and never echo request headers. The local API is trea
 each full extraction. Production consistency and pagination behavior must be reassessed against a
 mutable API.
 
-The connection and live pipeline test remain pending until a tunnel provider is explicitly
-approved.
+Do not retry the on-premises gateway/private-IP REST route. Fabric rejected both
+`http://127.0.0.1:8001` and the host's private IPv4 address with connector error 23360 because a
+REST resource at a private address was denied for that connection/network classification. The
+temporary public HTTPS transport was selected specifically for this synthetic demonstration; it
+does not change the production architecture recommendation.
+
+Bearer authentication remains mandatory even though the URL is temporary. Never commit the token,
+URL, request headers, tunnel logs, or a generated credential. For production, replace Quick Tunnel
+with a governed endpoint, stable DNS/certificate lifecycle, managed secrets, network controls,
+monitoring, and availability ownership.
 
 ## Failure and recovery
 
@@ -131,5 +161,6 @@ approved.
 
 ## Deferred operational actions
 
-MaintControl tunnel/provider authorization and live connection, Fabric Git Integration, production
-snapshot design, retention/SLOs, and all Bronze-to-Silver work remain separate approvals.
+MaintControl public HTTPS validation and live Fabric connection, Fabric Git Integration, production
+snapshot design, retention/SLOs, and all Bronze-to-Silver work remain incomplete or separate
+approvals. Quick Tunnel is authorized only for this synthetic demonstration.

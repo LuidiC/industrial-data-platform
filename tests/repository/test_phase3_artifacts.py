@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import hashlib
+import re
 import tomllib
 from pathlib import Path
 
@@ -26,9 +27,25 @@ def test_phase3_configuration_preserves_approved_boundaries() -> None:
     assert config["file_transport"]["demonstrated_in_fabric"] is False
     assert config["atlas_erp"]["snapshot_mode"] == "full"
     assert config["maintcontrol"]["snapshot_mode"] == "full"
-    assert (
-        config["maintcontrol"]["live_connection_status"] == "pending_tunnel_provider_authorization"
+    assert config["maintcontrol"]["live_connection_status"] == (
+        "authorized_demo_tunnel_local_validation_passed_public_blocked"
     )
+
+
+def test_maintcontrol_demo_scripts_keep_runtime_secrets_external() -> None:
+    api_script = (ROOT / "scripts" / "start-maintcontrol-api.ps1").read_text(encoding="utf-8")
+    tunnel_script = (ROOT / "scripts" / "start-maintcontrol-quick-tunnel.ps1").read_text(
+        encoding="utf-8"
+    )
+    smoke_script = (ROOT / "scripts" / "test-maintcontrol-endpoints.ps1").read_text(
+        encoding="utf-8"
+    )
+    combined = api_script + tunnel_script + smoke_script
+
+    assert 'BindHost = "127.0.0.1"' in api_script
+    assert 'Origin = "http://127.0.0.1:8001"' in tunnel_script
+    assert "MAINTCONTROL_API_TOKEN" in combined
+    assert re.search(r"https://[a-z0-9-]+\.trycloudflare\.com", combined) is None
 
 
 def test_six_pipeline_names_and_batched_notebook_pattern_are_versioned() -> None:

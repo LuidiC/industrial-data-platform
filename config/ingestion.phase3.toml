@@ -40,4 +40,4 @@ base_url_environment_variable = "MAINTCONTROL_TUNNEL_BASE_URL"
 bearer_token_environment_variable = "MAINTCONTROL_API_TOKEN"
 page_size = 500
 endpoints = ["work-orders", "maintenance-events"]
-live_connection_status = "pending_tunnel_provider_authorization"
+live_connection_status = "authorized_demo_tunnel_local_validation_passed_public_blocked"
