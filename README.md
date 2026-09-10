@@ -33,12 +33,33 @@ exemplos são sintéticos; nenhuma capacidade planejada é apresentada como impl
   `data: []`.
 
 O workspace `Industrial Data Platform - Lakehouse Analytics` e os três Lakehouses já existem e
-foram criados manualmente. A Phase 1 não implementa ingestão ou processamento dentro deles.
+foram criados manualmente.
 
-### Planejado
+### Implementado e aceito no Fabric — ingestão Bronze da Phase 3
 
-- Ingestão incremental dos arquivos CSV, XLSX, PostgreSQL, REST/JSON e PDF no Fabric.
-- Transformações Bronze → Silver com validação e quarantine.
+- Caminhos Bronze file-first e imutáveis, com regras aceitas de idempotência e replay.
+- Um notebook técnico em lotes para preflight/finalização; `ingestion_audit` é a única tabela Delta
+  da Phase 3.
+- Cinco pipelines de origem e o orquestrador sequencial foram validados no tenant, com
+  rastreabilidade pai/filho em `ingestion_audit`.
+- MES incremental, snapshots completos de AtlasERP/MaintControl e preservação binária de
+  XLSX/PDF foram demonstrados em Bronze.
+- SharePoint Online File é preferencial somente após PoC no tenant; o fallback OneLake demo staging
+  é sempre identificado corretamente em `transport_source`.
+- O MaintControl foi demonstrado por Cloudflare Quick Tunnel efêmero, sempre com API em loopback e
+  bearer token fornecido apenas em runtime. O caminho é exclusivo de demo e não representa a
+  recomendação de hospedagem para produção.
+
+Resultados do tenant são registrados separadamente nas
+[evidências de execução da Phase 3](docs/ingestion/execution-evidence.md); implementação no
+repositório não é apresentada como prova de execução bem-sucedida no Fabric.
+
+### Próxima fase recomendada — Phase 4
+
+- Bronze → Silver com tipagem, validação e quarantine.
+
+### Planejado após a Phase 4
+
 - Regras de negócio e modelagem analítica Silver → Gold.
 - Camada semântica e relatórios Power BI.
 
@@ -53,7 +74,7 @@ foram criados manualmente. A Phase 1 não implementa ingestão ou processamento 
 
 ```mermaid
 flowchart LR
-    SOURCES[Fontes sintéticas implementadas<br/>CSV · XLSX · PostgreSQL · REST/JSON] --> INGEST[Ingestão planejada]
+    SOURCES[Fontes sintéticas implementadas<br/>CSV · XLSX · PostgreSQL · REST/JSON] --> INGEST[Ingestão Bronze da Phase 3]
     INGEST --> BRONZE[(lh_bronze<br/>Preservação)]
     PDF[PDFs técnicos] --> INGEST
     BRONZE --> SILVER[(lh_silver<br/>Validação e conformidade)]
@@ -93,6 +114,8 @@ Leia a [visão completa da arquitetura](docs/architecture/overview.md).
 - [Convenção de Data Contracts](docs/data-contracts/README.md)
 - [Estratégia de observabilidade](docs/observability/strategy.md)
 - [Ecossistema de fontes da Phase 2](docs/sources/source-ecosystem.md)
+- [Runbook Bronze da Phase 3](docs/ingestion/phase3-runbook.md)
+- [Evidências de execução da Phase 3](docs/ingestion/execution-evidence.md)
 - [Guia para agentes e contribuidores](AGENTS.md)
 
 ## Desenvolvimento local

@@ -1,0 +1,43 @@
+[fabric]
+workspace_name = "Industrial Data Platform - Lakehouse Analytics"
+bronze_lakehouse = "lh_bronze"
+audit_table = "ingestion_audit"
+audit_notebook = "nb_bronze_ingestion_audit"
+
+[bronze]
+root = "Files/raw"
+immutable = true
+stale_started_after_hours = 2
+
+[file_transport]
+preferred = "sharepoint_online_file"
+fallback = "onelake_demo_staging"
+fallback_root = "Files/_demo_source_staging"
+selected = "onelake_demo_staging"
+selection_reason = "sharepoint_poc_not_executable_missing_site_library_folder"
+demonstrated_in_fabric = true
+
+[atlas_erp]
+tables = ["production_lines", "machines", "products", "production_orders"]
+snapshot_mode = "full"
+demo_source_stability_required = true
+
+[mes]
+object = "production_events"
+mode = "monthly_file_incremental"
+
+[quality]
+object = "quality_department"
+mode = "full_file"
+
+[technical_documents]
+mode = "binary_file"
+
+[maintcontrol]
+snapshot_mode = "full"
+demo_source_stability_required = true
+base_url_environment_variable = "MAINTCONTROL_TUNNEL_BASE_URL"
+bearer_token_environment_variable = "MAINTCONTROL_API_TOKEN"
+page_size = 500
+endpoints = ["work-orders", "maintenance-events"]
+live_connection_status = "accepted_quick_tunnel_demo_validated_in_fabric"

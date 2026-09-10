@@ -40,9 +40,10 @@ engineers remain accountable for controlled implementation and evidence from val
 
 ### Lineage and auditability
 
-Future processing must retain source identifiers, batch IDs, timestamps, rule results, and output
-destinations. Bronze-to-Silver and Silver-to-Gold transformations must be traceable through Fabric
-lineage where available and repository history for version-controlled artifacts.
+Phase 3 ingestion retains source identities, immutable batch IDs, UTC timestamps, SHA-256 values,
+transport provenance, replay linkage, and output destinations in `ingestion_audit`. Future
+Bronze-to-Silver and Silver-to-Gold transformations must remain traceable through Fabric lineage
+where available and repository history for version-controlled artifacts.
 
 ### Serving-layer access
 

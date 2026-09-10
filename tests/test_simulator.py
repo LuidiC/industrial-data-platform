@@ -11,11 +11,22 @@ from fastapi.testclient import TestClient
 from openpyxl import load_workbook
 
 from atlas_simulator.api import create_app
+from atlas_simulator.cli import _arguments
 from atlas_simulator.config import load_config
 from atlas_simulator.generator import RULE_EXPECTATIONS, generate, quality_status_rule, shift_for
 from atlas_simulator.writers import document_inputs, quarter_rows, write_all, write_pdfs
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def test_serve_api_host_defaults_to_loopback_and_is_configurable() -> None:
+    defaults = _arguments(["serve-api"])
+    configured = _arguments(["--host", "0.0.0.0", "--port", "8001", "serve-api"])
+
+    assert defaults.host == "127.0.0.1"
+    assert defaults.port == 8000
+    assert configured.host == "0.0.0.0"
+    assert configured.port == 8001
 
 
 def config(tmp_path: Path):
@@ -35,6 +46,25 @@ def test_generation_is_deterministic_and_period_limited(tmp_path: Path) -> None:
     assert len(january.production_orders) == 30
     assert all(row["event_started_at"].startswith("2025-01") for row in january.production_events)
     assert all(row["planned_start"].startswith("2025-01") for row in january.work_orders)
+
+
+def test_maintcontrol_work_order_window_uses_opened_at(tmp_path: Path) -> None:
+    data = generate(config(tmp_path), inject_anomalies=False)
+    client = TestClient(create_app(data, "test-token"))
+    headers = {"Authorization": "Bearer test-token"}
+    response = client.get(
+        "/api/v1/work-orders",
+        params={
+            "occurred_from": "2025-02-01T00:00:00-03:00",
+            "occurred_to": "2025-02-28T23:59:59-03:00",
+            "page_size": 500,
+        },
+        headers=headers,
+    )
+    assert response.status_code == 200
+    rows = response.json()["data"]
+    assert rows
+    assert all(row["opened_at"].startswith("2025-02") for row in rows)
 
 
 def test_independent_monthly_generation_matches_annual_business_data(tmp_path: Path) -> None:

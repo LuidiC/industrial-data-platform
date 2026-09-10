@@ -33,12 +33,32 @@ examples are synthetic; no planned capability is presented as implemented.
   `data: []`.
 
 The `Industrial Data Platform - Lakehouse Analytics` workspace and the three Lakehouses already
-exist and were created manually. Phase 1 does not implement ingestion or processing in them.
+exist and were created manually.
 
-### Planned
+### Implemented and accepted in Fabric — Phase 3 Bronze ingestion
 
-- Incremental Fabric ingestion of CSV, XLSX, PostgreSQL, REST/JSON, and PDF sources.
-- Bronze → Silver transformation with validation and quarantine.
+- Accepted file-first, immutable Bronze paths and idempotency/replay rules.
+- One batched preflight/finalize audit notebook; `ingestion_audit` is the only Phase 3 Delta table.
+- Five source pipelines and the sequential orchestrator were validated in the tenant, with
+  parent/child traceability in `ingestion_audit`.
+- MES incremental ingestion, full AtlasERP/MaintControl snapshots, and binary XLSX/PDF preservation
+  were demonstrated in Bronze.
+- SharePoint Online File is preferred only after a tenant PoC; the OneLake demo staging fallback is
+  always labeled honestly through `transport_source`.
+- MaintControl was demonstrated through an ephemeral Cloudflare Quick Tunnel, with the API kept on
+  loopback and its bearer token supplied only at runtime. This is demo-only and is not the
+  production hosting recommendation.
+
+Live tenant results are recorded independently in the
+[Phase 3 execution evidence](docs/ingestion/execution-evidence.md); repository implementation is not
+presented as proof that a Fabric run succeeded.
+
+### Recommended next phase — Phase 4
+
+- Bronze → Silver transformation with typing, validation, and quarantine.
+
+### Planned beyond Phase 4
+
 - Silver → Gold business rules and analytical modeling.
 - Power BI semantic layer and reports.
 
@@ -53,7 +73,7 @@ exist and were created manually. Phase 1 does not implement ingestion or process
 
 ```mermaid
 flowchart LR
-    SOURCES[Implemented synthetic sources<br/>CSV · XLSX · PostgreSQL · REST/JSON] --> INGEST[Planned ingestion]
+    SOURCES[Implemented synthetic sources<br/>CSV · XLSX · PostgreSQL · REST/JSON] --> INGEST[Phase 3 Bronze ingestion]
     INGEST --> BRONZE[(lh_bronze<br/>Preservation)]
     PDF[Technical PDFs] --> INGEST
     BRONZE --> SILVER[(lh_silver<br/>Validation and conformance)]
@@ -93,6 +113,8 @@ Read the [complete architecture overview](docs/architecture/overview.md).
 - [Data Contract convention](docs/data-contracts/README.md)
 - [Observability strategy](docs/observability/strategy.md)
 - [Phase 2 source ecosystem](docs/sources/source-ecosystem.md)
+- [Phase 3 Bronze runbook](docs/ingestion/phase3-runbook.md)
+- [Phase 3 execution evidence](docs/ingestion/execution-evidence.md)
 - [Agent and contributor guide](AGENTS.md)
 
 ## Local development

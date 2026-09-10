@@ -34,3 +34,4 @@ old one.
 | [ADR-004](004-quarantine-invalid-records.md) | Accepted | Quarantine critical invalid records |
 | [ADR-005](005-synthetic-data-only.md) | Accepted | Use synthetic data only |
 | [ADR-006](006-gold-general-serving-layer.md) | Accepted | Keep Gold consumer-agnostic |
+| [ADR-007](007-file-first-immutable-bronze.md) | Accepted | Use file-first immutable Bronze ingestion |

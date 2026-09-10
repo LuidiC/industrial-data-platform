@@ -3,8 +3,9 @@
 ## Purpose and boundaries
 
 Phase 2 implements deterministic, synthetic operational sources for Atlas Industrial Manufacturing.
-It does not implement Fabric ingestion, Bronze, Silver, Gold, Power BI, or source-to-Lakehouse
-processing. All generated values and documents are fictional and public-safe.
+Phase 3 consumes them without changing their Phase 2 source behavior. Silver, Gold, Power BI, and
+business transformation remain out of scope. All generated values and documents are fictional and
+public-safe.
 
 ## Sources and interfaces
 
@@ -42,7 +43,9 @@ metadata differs. MES files are generated monthly; orders
 are intentionally contained within one month so a monthly source drop remains self-contained.
 
 Run `atlas-sim load-erp` with `ATLAS_ERP_DSN` to create/load the AtlasERP schema. Run
-`atlas-sim serve-api` with `MAINTCONTROL_API_TOKEN` to expose the local MaintControl API. Both
+`atlas-sim --host 127.0.0.1 --port 8001 serve-api` with `MAINTCONTROL_API_TOKEN` to expose the
+local MaintControl API. The host defaults to loopback; only select another bind address for a
+deliberate local-network test. Both
 `GET /api/v1/work-orders` and `GET /api/v1/maintenance-events` require a bearer token, use stable
 cursor pagination, and have no write operations. Invalid cursors, offsets, filters, timestamp
 offsets, date ranges, and page sizes produce controlled 4xx responses without exposing exceptions.
@@ -73,11 +76,16 @@ document input model; they intentionally do not add a PDF parser, OCR, or extrac
 ## Future Fabric accessibility
 
 AtlasERP remains local, binds only to loopback, and provides a separate `atlas_fabric_reader` role
-with only schema usage and table select privileges for a future gateway. Bootstrap runs through the
-local admin role; the reader owns neither schema nor tables. MaintControl should remain local and use an authenticated,
-temporary HTTPS tunnel only for a live demo. CSV, XLSX, and PDF outputs should be synchronized to
-a dedicated OneDrive or SharePoint folder before Phase 3. These connections are not provisioned by
-Phase 2.
+with only schema usage and table select privileges for a gateway. Bootstrap runs through the local
+admin role; the reader owns neither schema nor tables. The committed reader password is a local
+development default and must be rotated before a Fabric connection is created.
+
+MaintControl remains local by default. For the accepted Phase 3 demo, a separately authorized
+Cloudflare Quick Tunnel exposed it through authenticated HTTPS while the API stayed bound to
+`127.0.0.1` and the tunnel forwarded to `http://127.0.0.1:8001`. This ephemeral route is not a
+production hosting recommendation. CSV, XLSX, and PDF prefer SharePoint Online File only when the
+tenant PoC passes; otherwise the runbook uses and explicitly labels the OneLake demo staging
+fallback.
 
 ## Public artifact policy
 
