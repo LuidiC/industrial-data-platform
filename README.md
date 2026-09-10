@@ -54,12 +54,18 @@ Resultados do tenant são registrados separadamente nas
 [evidências de execução da Phase 3](docs/ingestion/execution-evidence.md); implementação no
 repositório não é apresentada como prova de execução bem-sucedida no Fabric.
 
-### Próxima fase recomendada — Phase 4
+### Implementado no repositório — Phase 4A/4B Silver MVP
 
-- Bronze → Silver com tipagem, validação e quarantine.
+- Transformação Bronze → Silver de AtlasERP e MES orientada por `ingestion_audit`.
+- Tabelas Delta tipadas para linhas, máquinas, produtos, ordens e eventos de produção.
+- Regras DQ catalogadas, quarantine determinística e MERGE idempotente.
+- Notebook PySpark e receita exata do pipeline independente `pl_transform_bronze_to_silver`.
+- A execução no tenant ainda não foi demonstrada; Quality, MaintControl e Technical Documents
+  continuam fora deste recorte.
 
-### Planejado após a Phase 4
+### Planejado após o MVP Silver
 
+- Extensão Silver para Quality, MaintControl e metadados de Technical Documents.
 - Regras de negócio e modelagem analítica Silver → Gold.
 - Camada semântica e relatórios Power BI.
 
@@ -116,6 +122,7 @@ Leia a [visão completa da arquitetura](docs/architecture/overview.md).
 - [Ecossistema de fontes da Phase 2](docs/sources/source-ecosystem.md)
 - [Runbook Bronze da Phase 3](docs/ingestion/phase3-runbook.md)
 - [Evidências de execução da Phase 3](docs/ingestion/execution-evidence.md)
+- [Recorte Silver de produção da Phase 4A/4B](docs/silver/phase4-production-slice.md)
 - [Guia para agentes e contribuidores](AGENTS.md)
 
 ## Desenvolvimento local

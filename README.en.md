@@ -53,12 +53,18 @@ Live tenant results are recorded independently in the
 [Phase 3 execution evidence](docs/ingestion/execution-evidence.md); repository implementation is not
 presented as proof that a Fabric run succeeded.
 
-### Recommended next phase — Phase 4
+### Implemented in repository — Phase 4A/4B Silver MVP
 
-- Bronze → Silver transformation with typing, validation, and quarantine.
+- Audit-driven AtlasERP and MES Bronze → Silver transformation.
+- Typed Delta tables for lines, machines, products, orders, and production events.
+- Cataloged DQ rules, deterministic quarantine, and idempotent MERGE behavior.
+- PySpark notebook and exact recipe for the independent `pl_transform_bronze_to_silver` pipeline.
+- Tenant execution is not yet demonstrated; Quality, MaintControl, and Technical Documents remain
+  outside this slice.
 
-### Planned beyond Phase 4
+### Planned beyond the Silver MVP
 
+- Silver extension for Quality, MaintControl, and Technical Document metadata.
 - Silver → Gold business rules and analytical modeling.
 - Power BI semantic layer and reports.
 
@@ -115,6 +121,7 @@ Read the [complete architecture overview](docs/architecture/overview.md).
 - [Phase 2 source ecosystem](docs/sources/source-ecosystem.md)
 - [Phase 3 Bronze runbook](docs/ingestion/phase3-runbook.md)
 - [Phase 3 execution evidence](docs/ingestion/execution-evidence.md)
+- [Phase 4A/4B production Silver slice](docs/silver/phase4-production-slice.md)
 - [Agent and contributor guide](AGENTS.md)
 
 ## Local development

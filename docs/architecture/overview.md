@@ -9,7 +9,9 @@ The Fabric workspace `Industrial Data Platform - Lakehouse Analytics` and the La
 `lh_bronze`, `lh_silver`, and `lh_gold` already exist and were created manually. Phase 1 added the
 repository and architectural foundation. Phase 2 implements the synthetic source ecosystem locally.
 Phase 3 implements file-first Bronze ingestion definitions and its audit control plane;
-Bronze-to-Silver and serving models remain outside the phase.
+Phase 4A/4B now implements the source-controlled AtlasERP and MES Bronze-to-Silver production
+slice. Its tenant execution is not yet claimed. Quality, MaintControl, Technical Documents, Gold,
+and serving models remain outside this implemented Silver slice.
 
 ## Logical data flow
 
