@@ -15,7 +15,7 @@ fallback = "onelake_demo_staging"
 fallback_root = "Files/_demo_source_staging"
 selected = "onelake_demo_staging"
 selection_reason = "sharepoint_poc_not_executable_missing_site_library_folder"
-demonstrated_in_fabric = false
+demonstrated_in_fabric = true
 
 [atlas_erp]
 tables = ["production_lines", "machines", "products", "production_orders"]
@@ -40,4 +40,4 @@ base_url_environment_variable = "MAINTCONTROL_TUNNEL_BASE_URL"
 bearer_token_environment_variable = "MAINTCONTROL_API_TOKEN"
 page_size = 500
 endpoints = ["work-orders", "maintenance-events"]
-live_connection_status = "authorized_demo_tunnel_local_validation_passed_public_blocked"
+live_connection_status = "accepted_quick_tunnel_demo_validated_in_fabric"

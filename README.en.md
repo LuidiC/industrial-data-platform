@@ -35,25 +35,30 @@ examples are synthetic; no planned capability is presented as implemented.
 The `Industrial Data Platform - Lakehouse Analytics` workspace and the three Lakehouses already
 exist and were created manually.
 
-### Implemented in the repository — Phase 3 Bronze ingestion
+### Implemented and accepted in Fabric — Phase 3 Bronze ingestion
 
 - Accepted file-first, immutable Bronze paths and idempotency/replay rules.
 - One batched preflight/finalize audit notebook; `ingestion_audit` is the only Phase 3 Delta table.
-- Exact build specification for six Fabric pipelines, including MES incremental behavior, full
-  AtlasERP/API snapshots, and binary XLSX/PDF preservation.
+- Five source pipelines and the sequential orchestrator were validated in the tenant, with
+  parent/child traceability in `ingestion_audit`.
+- MES incremental ingestion, full AtlasERP/MaintControl snapshots, and binary XLSX/PDF preservation
+  were demonstrated in Bronze.
 - SharePoint Online File is preferred only after a tenant PoC; the OneLake demo staging fallback is
   always labeled honestly through `transport_source`.
-- The MaintControl demo is authorized for an ephemeral Cloudflare Quick Tunnel, with the API kept on
-  loopback and its bearer token supplied only at runtime. Local API checks passed; HTTPS and Fabric
-  execution have not yet been demonstrated.
+- MaintControl was demonstrated through an ephemeral Cloudflare Quick Tunnel, with the API kept on
+  loopback and its bearer token supplied only at runtime. This is demo-only and is not the
+  production hosting recommendation.
 
 Live tenant results are recorded independently in the
 [Phase 3 execution evidence](docs/ingestion/execution-evidence.md); repository implementation is not
 presented as proof that a Fabric run succeeded.
 
-### Planned beyond Phase 3
+### Recommended next phase — Phase 4
 
-- Bronze → Silver transformation with validation and quarantine.
+- Bronze → Silver transformation with typing, validation, and quarantine.
+
+### Planned beyond Phase 4
+
 - Silver → Gold business rules and analytical modeling.
 - Power BI semantic layer and reports.
 

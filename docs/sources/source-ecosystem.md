@@ -80,11 +80,12 @@ with only schema usage and table select privileges for a gateway. Bootstrap runs
 admin role; the reader owns neither schema nor tables. The committed reader password is a local
 development default and must be rotated before a Fabric connection is created.
 
-MaintControl remains local until a separately authorized provider exposes it through authenticated
-HTTPS. When a temporary tunnel is used for the demo, the API remains bound to `127.0.0.1` and the
-tunnel forwards to `http://127.0.0.1:8001`. CSV, XLSX, and PDF prefer SharePoint Online File only
-when the tenant PoC passes; otherwise the runbook uses and explicitly labels the OneLake demo
-staging fallback.
+MaintControl remains local by default. For the accepted Phase 3 demo, a separately authorized
+Cloudflare Quick Tunnel exposed it through authenticated HTTPS while the API stayed bound to
+`127.0.0.1` and the tunnel forwarded to `http://127.0.0.1:8001`. This ephemeral route is not a
+production hosting recommendation. CSV, XLSX, and PDF prefer SharePoint Online File only when the
+tenant PoC passes; otherwise the runbook uses and explicitly labels the OneLake demo staging
+fallback.
 
 ## Public artifact policy
 

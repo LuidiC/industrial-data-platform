@@ -35,26 +35,31 @@ exemplos são sintéticos; nenhuma capacidade planejada é apresentada como impl
 O workspace `Industrial Data Platform - Lakehouse Analytics` e os três Lakehouses já existem e
 foram criados manualmente.
 
-### Implementado no repositório — ingestão Bronze da Phase 3
+### Implementado e aceito no Fabric — ingestão Bronze da Phase 3
 
 - Caminhos Bronze file-first e imutáveis, com regras aceitas de idempotência e replay.
 - Um notebook técnico em lotes para preflight/finalização; `ingestion_audit` é a única tabela Delta
   da Phase 3.
-- Especificação exata de construção dos seis pipelines Fabric, incluindo incremental do MES,
-  snapshots completos de AtlasERP/API e preservação binária de XLSX/PDF.
+- Cinco pipelines de origem e o orquestrador sequencial foram validados no tenant, com
+  rastreabilidade pai/filho em `ingestion_audit`.
+- MES incremental, snapshots completos de AtlasERP/MaintControl e preservação binária de
+  XLSX/PDF foram demonstrados em Bronze.
 - SharePoint Online File é preferencial somente após PoC no tenant; o fallback OneLake demo staging
   é sempre identificado corretamente em `transport_source`.
-- O demo do MaintControl foi autorizado para Cloudflare Quick Tunnel efêmero, sempre com API em
-  loopback e bearer token fornecido apenas em runtime. A API local foi validada; o teste HTTPS e a
-  execução Fabric ainda não foram demonstrados.
+- O MaintControl foi demonstrado por Cloudflare Quick Tunnel efêmero, sempre com API em loopback e
+  bearer token fornecido apenas em runtime. O caminho é exclusivo de demo e não representa a
+  recomendação de hospedagem para produção.
 
 Resultados do tenant são registrados separadamente nas
 [evidências de execução da Phase 3](docs/ingestion/execution-evidence.md); implementação no
 repositório não é apresentada como prova de execução bem-sucedida no Fabric.
 
-### Planejado após a Phase 3
+### Próxima fase recomendada — Phase 4
 
-- Transformações Bronze → Silver com validação e quarantine.
+- Bronze → Silver com tipagem, validação e quarantine.
+
+### Planejado após a Phase 4
+
 - Regras de negócio e modelagem analítica Silver → Gold.
 - Camada semântica e relatórios Power BI.
 

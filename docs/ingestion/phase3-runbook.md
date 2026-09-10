@@ -3,8 +3,10 @@
 ## Scope and status language
 
 This runbook covers ingestion into `lh_bronze` only. It does not authorize transformation,
-quarantine processing, Gold modeling, Power BI, OCR, CDC, mirroring, or tunneling software. A
-resource is called *demonstrated* only when its Fabric run evidence is recorded in
+quarantine processing, Gold modeling, Power BI, OCR, CDC, mirroring, or production tunneling
+software. The temporary Cloudflare Quick Tunnel described below is authorized only for the
+synthetic MaintControl demonstration and is not a production architecture. A resource is called
+*demonstrated* only when its Fabric run evidence is recorded in
 `execution-evidence.md`; repository code or a portal item alone is not a successful ingestion run.
 
 ## File transport decision gate
@@ -39,7 +41,7 @@ SharePoint coordinates are later provided.
    `mode=initialize`. Confirm the only new Delta table is `ingestion_audit`.
 3. Run the SharePoint PoC and record pass/fail plus selected transport.
 4. Create the five child pipelines from `fabric/pipeline-build-spec.md`; validate each independently.
-5. Create `pl_ingest_all_sources` with MaintControl disabled by default.
+5. Create `pl_ingest_all_sources` with the five child invocations in their accepted sequential order.
 6. Run and record the scenarios below. Never run the same source pipeline concurrently.
 
 ## Audit operations
@@ -67,6 +69,13 @@ copy. It never substitutes destination hashing for the preflight source check.
 Do not delete or overwrite raw batches. A replay writes a new batch, links
 `replay_of_batch_id`, and succeeds as `SUCCEEDED_REPLAY` only when the requested historical file,
 period, and hash match.
+
+For `postgresql_gateway` and `maintcontrol_https`, a null source content hash selects
+snapshot-identity idempotency: a successful prior row for the same identity is skipped. This is not
+source content fingerprinting or source-change detection. The accepted Phase 3 notebook does not
+support replay for these non-file transports because their current candidate hash is null while the
+prior destination hash is populated. Keep `force_reprocess=false` and `replay_of_batch_id` empty for
+AtlasERP and MaintControl; reassess non-file replay in a later phase rather than claiming support.
 
 ## Required demonstrations
 
@@ -149,6 +158,39 @@ URL, request headers, tunnel logs, or a generated credential. For production, re
 with a governed endpoint, stable DNS/certificate lifecycle, managed secrets, network controls,
 monitoring, and availability ownership.
 
+The public tunnel is a TLS-terminating intermediary for this demo. Starting it and validating the
+authenticated endpoints necessarily sends the synthetic runtime bearer header through Cloudflare.
+Use a short-lived demo-only token, keep it out of command history and logs, and rotate it after the
+session. If the execution environment requires a separate confirmation for that disclosure, obtain
+it before starting the tunnel; do not weaken authentication or broaden permissions as a workaround.
+
+The accepted published pipeline uses the connection displayed as
+`cn_rest_maintcontrol_quick_tunnel_tmp 1447551`. The legacy suffix does not mean it is currently
+disposable: `copy_maintcontrol_object` depends on it. Update its base URL for a new demo tunnel; do
+not store that URL or the token in Git. The accepted activity graph is:
+
+```text
+append_candidate_work_orders
+  -> append_candidate_maintenance_events
+  -> nb_preflight_maintcontrol
+  -> filter_blocking_maintcontrol
+  -> filter_ingest_maintcontrol
+  -> copy_ingest_maintcontrol
+  -> nb_finalize_maintcontrol
+  -> if_fail_maintcontrol
+```
+
+The sequential ForEach contains `copy_maintcontrol_object`; success appends to `copy_results`, while
+failure appends a sanitized failure result and sets `copy_failed=true`. The final condition fails
+when the blocking plan is nonempty or `copy_failed` is true. Preflight and finalize remain batched,
+one notebook invocation each.
+
+`pl_ingest_all_sources` invokes AtlasERP, MES, Quality, MaintControl, and Technical Documents in
+that order. Each Invoke Pipeline waits for completion and passes
+`parent_execution_id=@pipeline().RunId`; a failed child prevents the dependent next activity from
+running. MaintControl additionally receives the runtime URL, token, window, and page size. The
+orchestrator does not contain Copy, notebook, or Silver activities.
+
 ## Failure and recovery
 
 - A copy failure is finalized as `FAILED` with a sanitized error code/message; never log secrets.
@@ -161,6 +203,9 @@ monitoring, and availability ownership.
 
 ## Deferred operational actions
 
-MaintControl public HTTPS validation and live Fabric connection, Fabric Git Integration, production
-snapshot design, retention/SLOs, and all Bronze-to-Silver work remain incomplete or separate
-approvals. Quick Tunnel is authorized only for this synthetic demonstration.
+Rotate/discard the synthetic bearer token after the demo. Before a later MaintControl run, start a
+new authorized endpoint and update the demo-only connection URL. The old diagnostic REST gateway
+connections remain pending owner review because their obsolescence was not proven. Fabric Git
+Integration, production snapshot design, retention/SLOs, production API hosting, and all
+Bronze-to-Silver work are later decisions. Quick Tunnel remains authorized only for this synthetic
+demonstration.

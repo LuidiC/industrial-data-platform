@@ -24,11 +24,11 @@ def test_phase3_configuration_preserves_approved_boundaries() -> None:
     assert config["file_transport"]["preferred"] == "sharepoint_online_file"
     assert config["file_transport"]["fallback"] == "onelake_demo_staging"
     assert config["file_transport"]["selected"] == "onelake_demo_staging"
-    assert config["file_transport"]["demonstrated_in_fabric"] is False
+    assert config["file_transport"]["demonstrated_in_fabric"] is True
     assert config["atlas_erp"]["snapshot_mode"] == "full"
     assert config["maintcontrol"]["snapshot_mode"] == "full"
     assert config["maintcontrol"]["live_connection_status"] == (
-        "authorized_demo_tunnel_local_validation_passed_public_blocked"
+        "accepted_quick_tunnel_demo_validated_in_fabric"
     )
 
 
