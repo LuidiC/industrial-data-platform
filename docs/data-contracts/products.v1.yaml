@@ -1,10 +1,10 @@
 dataset: products
-version: "1.0.0"
+version: "1.0.1"
 description: AtlasERP product master records.
 logical_owner: production_operations
 grain: one product
 fields:
-  - {name: product_id, type: string, required: true, unique: true, description: Stable product identifier, example: PRD-001, constraints: {}, related_dq_rules: []}
-  - {name: product_name, type: string, required: true, unique: true, description: Product display name, example: Atlas Component 001, constraints: {}, related_dq_rules: []}
-  - {name: product_family, type: string, required: true, unique: false, description: Product family, example: hydraulic, constraints: {allowed_values: [hydraulic, electrical, mechanical]}, related_dq_rules: []}
-  - {name: nominal_cycle_seconds, type: integer, required: true, unique: false, description: Reference cycle duration, example: 60, constraints: {minimum: 1}, related_dq_rules: []}
+  - {name: product_id, type: string, required: true, unique: true, description: Stable product identifier, example: PRD-001, constraints: {}, related_dq_rules: [DQ-CORE-001, DQ-CORE-005]}
+  - {name: product_name, type: string, required: true, unique: true, description: Product display name, example: Atlas Component 001, constraints: {}, related_dq_rules: [DQ-CORE-001]}
+  - {name: product_family, type: string, required: true, unique: false, description: Product family, example: hydraulic, constraints: {allowed_values: [hydraulic, electrical, mechanical]}, related_dq_rules: [DQ-CORE-001, DQ-CORE-003]}
+  - {name: nominal_cycle_seconds, type: integer, required: true, unique: false, description: Reference cycle duration, example: 60, constraints: {minimum: 1}, related_dq_rules: [DQ-CORE-001, DQ-CORE-007]}

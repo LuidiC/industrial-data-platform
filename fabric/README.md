@@ -1,12 +1,17 @@
-# Microsoft Fabric Phase 3 artifacts
+# Microsoft Fabric artifacts
 
-This directory contains source-controlled implementation material for the Phase 3 ingestion layer.
-It is not a fabricated Fabric export and contains no manually invented pipeline JSON.
+This directory contains source-controlled implementation material for the Phase 3 ingestion layer
+and the Phase 4A/4B Silver production slice. It is not a fabricated Fabric export and contains no
+manually invented pipeline JSON.
 
 - `notebooks/nb_bronze_ingestion_audit.py` is the single batched technical notebook. Attach it to
   `lh_bronze` and mark the four variables in its first cell as notebook parameters.
 - `pipeline-build-spec.md` is the exact portal build specification for the six Data Factory
   pipelines. The live workspace remains the authoritative representation of each pipeline.
+- `notebooks/nb_bronze_to_silver.py` implements the audit-driven AtlasERP and MES Silver slice with
+  typed Delta outputs, quarantine, and idempotent MERGE behavior.
+- `silver-pipeline-build-spec.md` is the manual build and validation recipe for the independent
+  `pl_transform_bronze_to_silver` pipeline. Tenant execution is not claimed by repository code.
 
-Native Fabric Git Integration is deliberately not configured in Phase 3. Repository artifacts are
+Native Fabric Git Integration is deliberately not configured. Repository artifacts are
 therefore maintained alongside, but are not presented as exports of, the live Fabric items.

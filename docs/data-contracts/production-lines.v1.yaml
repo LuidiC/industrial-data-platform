@@ -1,9 +1,9 @@
 dataset: production_lines
-version: "1.0.0"
+version: "1.0.1"
 description: AtlasERP production line master records.
 logical_owner: production_operations
 grain: one production line
 fields:
-  - {name: line_id, type: string, required: true, unique: true, description: Stable line identifier, example: LINE-01, constraints: {}, related_dq_rules: []}
-  - {name: line_name, type: string, required: true, unique: true, description: Human-readable line name, example: Assembly Line 01, constraints: {}, related_dq_rules: []}
-  - {name: status, type: string, required: true, unique: false, description: Line operating state, example: active, constraints: {allowed_values: [active, maintenance]}, related_dq_rules: []}
+  - {name: line_id, type: string, required: true, unique: true, description: Stable line identifier, example: LINE-01, constraints: {}, related_dq_rules: [DQ-CORE-001, DQ-CORE-005]}
+  - {name: line_name, type: string, required: true, unique: true, description: Human-readable line name, example: Assembly Line 01, constraints: {}, related_dq_rules: [DQ-CORE-001]}
+  - {name: status, type: string, required: true, unique: false, description: Line operating state, example: active, constraints: {allowed_values: [active, maintenance]}, related_dq_rules: [DQ-CORE-001, DQ-CORE-003]}

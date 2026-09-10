@@ -53,14 +53,23 @@ Live tenant results are recorded independently in the
 [Phase 3 execution evidence](docs/ingestion/execution-evidence.md); repository implementation is not
 presented as proof that a Fabric run succeeded.
 
-### Recommended next phase — Phase 4
+### Implemented and accepted in Fabric — Phase 4A/4B Silver MVP
 
-- Bronze → Silver transformation with typing, validation, and quarantine.
+- Audit-driven AtlasERP and MES Bronze → Silver transformation.
+- Typed Delta tables for lines, machines, products, orders, and production events.
+- Cataloged DQ rules, deterministic quarantine, and idempotent MERGE behavior.
+- PySpark notebook `nb_bronze_to_silver` validated through repeated tenant executions.
+- Independent `pl_transform_bronze_to_silver` pipeline created, validated, and successfully executed in Fabric.
+- `processing_run_id` is dynamically propagated from the Fabric pipeline Run ID for traceability.
+- Repeated execution preserved the Silver row counts and kept `quarantine_records` at 145 rows,
+  demonstrating idempotency for the current AtlasERP + MES slice.
+- Quality, MaintControl, and Technical Documents intentionally remain outside this Silver MVP.
 
-### Planned beyond Phase 4
+### Next increments
 
-- Silver → Gold business rules and analytical modeling.
-- Power BI semantic layer and reports.
+- Minimal Gold production analytical model.
+- Power BI semantic layer and production dashboard.
+- Later Silver extension for Quality, MaintControl, and Technical Document metadata.
 
 ### Stretch goals
 
@@ -96,13 +105,13 @@ Read the [complete architecture overview](docs/architecture/overview.md).
 
 ## Implemented sources
 
-| Fictional system | Technology | Domain |
-|---|---|---|
-| MES Simulator | Periodic CSV | Production events |
-| Quality Department | XLSX | Quality inspections |
-| AtlasERP | PostgreSQL | Lines, machines, products, and orders |
-| MaintControl | REST / JSON | Maintenance and work orders |
-| Technical Documents | PDF | Reports and technical documents |
+| Fictional system    | Technology   | Domain                                |
+| ------------------- | ------------ | ------------------------------------- |
+| MES Simulator       | Periodic CSV | Production events                     |
+| Quality Department  | XLSX         | Quality inspections                   |
+| AtlasERP            | PostgreSQL   | Lines, machines, products, and orders |
+| MaintControl        | REST / JSON  | Maintenance and work orders           |
+| Technical Documents | PDF          | Reports and technical documents       |
 
 ## Documentation
 
@@ -115,6 +124,8 @@ Read the [complete architecture overview](docs/architecture/overview.md).
 - [Phase 2 source ecosystem](docs/sources/source-ecosystem.md)
 - [Phase 3 Bronze runbook](docs/ingestion/phase3-runbook.md)
 - [Phase 3 execution evidence](docs/ingestion/execution-evidence.md)
+- [Phase 4A/4B production Silver slice](docs/silver/phase4-production-slice.md)
+- [Phase 4A/4B handoff and execution evidence](docs/silver/phase4-handoff.md)
 - [Agent and contributor guide](AGENTS.md)
 
 ## Local development
