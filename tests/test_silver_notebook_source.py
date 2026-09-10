@@ -3,7 +3,7 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
-from pathlib import Path
+from pathlib import Path, PurePosixPath
 
 import pytest
 import yaml
@@ -16,6 +16,7 @@ PURE_FUNCTIONS = {
     "_select_mes_batches",
     "_normalize_id_value",
     "_canonical_record_hash",
+    "_bronze_path",
     "_stable_quarantine_id",
 }
 
@@ -37,6 +38,7 @@ def _load_pure_functions() -> dict:
         ),
         "hashlib": hashlib,
         "json": json,
+        "PurePosixPath": PurePosixPath,
     }
     exec(
         compile(ast.Module(body=functions, type_ignores=[]), str(NOTEBOOK_SOURCE), "exec"),
@@ -216,6 +218,47 @@ def test_normalization_hashing_and_quarantine_identity_are_stable() -> None:
     quarantine_id = functions["_stable_quarantine_id"](*arguments)
     assert quarantine_id == functions["_stable_quarantine_id"](*arguments)
     assert quarantine_id != functions["_stable_quarantine_id"](*arguments[:-1], "different")
+
+
+def test_bronze_path_preserves_safe_audited_relative_path() -> None:
+    bronze_path = _load_pure_functions()["_bronze_path"]
+    path = "Files/raw/atlas_erp/products/batch-1/products.parquet"
+    assert bronze_path(path) == path
+
+
+@pytest.mark.parametrize(
+    "path",
+    (
+        "/lakehouse/default/Files/raw/mes/events.csv",
+        "Files/raw/../secrets.csv",
+        "Files/../../secrets.csv",
+        "raw/mes/events.csv",
+        "",
+    ),
+)
+def test_bronze_path_rejects_unsafe_or_non_files_paths(path: str) -> None:
+    bronze_path = _load_pure_functions()["_bronze_path"]
+    with pytest.raises(ValueError):
+        bronze_path(path)
+
+
+def test_existing_event_conflict_columns_are_dropped_after_failure_materialization() -> None:
+    source = NOTEBOOK_SOURCE.read_text(encoding="utf-8")
+    tree = ast.parse(source, filename=str(NOTEBOOK_SOURCE))
+    function = next(
+        node
+        for node in tree.body
+        if isinstance(node, ast.FunctionDef) and node.name == "_mark_existing_event_conflicts"
+    )
+    function_source = ast.get_source_segment(source, function)
+    assert function_source is not None
+
+    append_position = function_source.index("frame = _append_failure(")
+    drop_position = function_source.index(
+        'return frame.drop("_existing_key", "_existing_record_hash")'
+    )
+    assert append_position < drop_position
+    assert 'frame.drop("_existing_key"),' not in function_source
 
 
 def test_notebook_declares_dq_and_idempotent_merge_behavior() -> None:

@@ -30,7 +30,6 @@ from pyspark.sql.types import (
 
 BRONZE_AUDIT_TABLE = "lh_bronze.dbo.ingestion_audit"
 SILVER_TABLE_PREFIX = "lh_silver.dbo"
-BRONZE_ROOT = "/lakehouse/default"
 ACCEPTED_STATUSES = {"SUCCEEDED", "SUCCEEDED_REPLAY"}
 SUPPORTED_DOMAINS = {"all", "atlas_erp", "mes"}
 ATLAS_OBJECTS = (
@@ -221,7 +220,7 @@ def _bronze_path(destination_path: str) -> str:
         raise ValueError(f"Unsafe audited Bronze destination path: {destination_path}")
     if relative.parts[0] != "Files":
         raise ValueError(f"Audited Bronze destination must be below Files: {destination_path}")
-    return f"{BRONZE_ROOT}/{relative.as_posix()}"
+    return relative.as_posix()
 
 
 def _null_if_empty(column):
@@ -415,12 +414,13 @@ def _mark_existing_event_conflicts(frame, business_key: str, target_table: str):
     conflict = F.col("_existing_key").isNotNull() & ~F.col("record_hash").eqNullSafe(
         F.col("_existing_record_hash")
     )
-    return _append_failure(
-        frame.drop("_existing_key"),
+    frame = _append_failure(
+        frame,
         conflict,
         "DQ-CORE-005",
         f"Business key already exists with a different payload: {business_key}.",
-    ).drop("_existing_record_hash")
+    )
+    return frame.drop("_existing_key", "_existing_record_hash")
 
 
 def _merge_table(frame, table_name: str, business_key: str, *, insert_only: bool) -> None:

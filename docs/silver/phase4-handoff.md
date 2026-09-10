@@ -2,9 +2,9 @@
 
 ## Snapshot
 
-- Timestamp: `2026-09-10T16:03:13-03:00`
+- Timestamp: `2026-09-10T17:07:25-03:00`
 - Branch: `feat/phase-4-silver-transformation`
-- Git status before this handoff file: clean
+- Git status before reconciliation: clean
 - Remote actions: none; no push, pull request, merge, or history rewrite was performed
 - Scope stopped at Phase 4A (Silver foundation) and Phase 4B (AtlasERP + MES)
 
@@ -12,7 +12,14 @@
 
 - `7fe7ef3 feat: add AtlasERP and MES Silver transformation`
 - `5662bd6 docs: document Silver production slice`
-- This handoff is the final local documentation checkpoint.
+- `e8bbbd6 docs: add Phase 4 Silver handoff`
+- `fix: reconcile Silver Fabric runtime issues` (this reconciliation checkpoint)
+
+This reconciliation changes only:
+
+- `fabric/notebooks/nb_bronze_to_silver.py`
+- `tests/test_silver_notebook_source.py`
+- `docs/silver/phase4-handoff.md`
 
 Files changed from the merged Phase 3 baseline:
 
@@ -63,7 +70,7 @@ rule ID is emitted.
 - Ruff check: passed.
 - Ruff format check: passed (`43 files already formatted`).
 - Python compile check: passed for `src`, `tests`, and `fabric/notebooks`.
-- Pytest: `64 passed, 1 skipped, 1 warning in 63.66s` with `PYTHONPATH=src`.
+- Pytest: `71 passed, 1 skipped, 1 warning in 63.94s` with `PYTHONPATH=src`.
 - Skip: PostgreSQL integration because `ATLAS_ERP_TEST_DSN` was not configured.
 - Warning: upstream Starlette/AnyIO `BlockingPortal` deprecation.
 - `git diff --check`: passed; only Git line-ending conversion notices were printed before staging.
@@ -82,44 +89,45 @@ idempotency intent. They do not replace a Spark/Fabric rerun.
 Workspace: `Industrial Data Platform - Lakehouse Analytics`
 (`029313a7-3cbc-401c-a1fe-3ee41f001cd1`).
 
-Created notebook `nb_bronze_to_silver`
-(`77f29595-9676-4ef6-a914-620be4e872c4`) and attached the existing `lh_bronze` and `lh_silver`
-Lakehouses. The first cell contains `domain = "all"` and `processing_run_id = ""`, is marked as a
-parameter cell, and the item shows `Salvo` in Fabric.
+Notebook `nb_bronze_to_silver` (`77f29595-9676-4ef6-a914-620be4e872c4`) is attached to the
+existing `lh_bronze` and `lh_silver` Lakehouses. The Silver MVP was executed successfully in Fabric.
 
-The complete source could not be transferred into the browser editor: the browser automation
-security policy blocked the safe local-to-editor transfer mechanism. The second code cell therefore
-remains empty. To avoid creating misleading evidence or executing partial code, the notebook was
-not run and `pl_transform_bronze_to_silver` was not created. Consequently:
+The first successful run materialized:
 
-- Fabric run IDs: none
-- Fabric row counts: not observed
-- Tenant business-key/reference checks: not executed
-- Tenant rerun/idempotency evidence: not available
-- Silver Delta materialization in the tenant: not demonstrated
+| Table | Rows |
+|---|---:|
+| `production_lines` | 3 |
+| `machines` | 12 |
+| `products` | 8 |
+| `production_orders` | 360 |
+| `production_events` | 540 |
+| `quarantine_records` | 145 |
 
-Repository implementation and local tests are complete; tenant execution remains planned, not
-demonstrated.
+The second identical run initially exposed a lazy Spark evaluation defect in conflict detection.
+After the fix, it succeeded with the same six counts, including 145 quarantine rows. No duplicate
+quarantine rows were created. This is tenant execution evidence for rerun idempotency of the current
+AtlasERP + MES Silver MVP. Fabric run IDs were not available and are not fabricated here.
 
-## Manual Fabric completion
+Two runtime issues were discovered and corrected manually in Fabric, then reconciled into source:
 
-1. Open the created notebook at
-   `https://app.fabric.microsoft.com/groups/029313a7-3cbc-401c-a1fe-3ee41f001cd1/synapsenotebooks/77f29595-9676-4ef6-a914-620be4e872c4?experience=fabric-developer`.
-2. Confirm `lh_bronze` is the default Lakehouse and both `lh_bronze` and `lh_silver` are attached
-   with schema-enabled access.
-3. Keep the existing parameter cell. In the second code cell, paste
-   `from __future__ import annotations`, then all content from the `# CELL` marker onward in
-   `fabric/notebooks/nb_bronze_to_silver.py`. Save.
-4. Run the notebook with `domain=all` and a new UUID in `processing_run_id`. Capture the exit JSON,
-   Spark application/run ID, six table counts, uniqueness, and reference checks.
-5. Run it again unchanged with a second UUID. Verify conformed and quarantine row counts are
-   identical and capture the second run ID.
-6. Follow `fabric/silver-pipeline-build-spec.md` to create the independent
-   `pl_transform_bronze_to_silver` pipeline with one Notebook activity, `domain=all`, and
-   `processing_run_id=@pipeline().RunId`. Execute it only after both direct notebook runs pass.
+1. `/lakehouse/default/Files/...` produced a OneLake HTTP 400 response. Passing the audited relative
+   `Files/...` path directly succeeded, so `_bronze_path()` now preserves that safe relative form.
+2. `_mark_existing_event_conflicts()` dropped `_existing_key` before Spark materialized the lazy
+   conflict expression. The helper now appends the failure first and drops both temporary columns
+   afterward.
+
+`pl_transform_bronze_to_silver` has not yet been created or executed.
+
+## Remaining Fabric work
+
+1. Create `pl_transform_bronze_to_silver` from `fabric/silver-pipeline-build-spec.md` with one
+   Notebook activity, `domain=all`, and `processing_run_id=@pipeline().RunId`.
+2. Execute the pipeline in Fabric and capture its run ID and stable output counts.
+3. Review the completed Silver MVP and decide whether to move directly to Gold or extend Silver
+   scope. Quality, MaintControl, and Technical Documents remain outside the implemented slice.
 
 ## Recommended next action
 
-Complete steps 1-5 above first. If both Fabric runs succeed and counts remain stable, create and run
-the pipeline using the checked-in build specification. Stop and diagnose any three-part-name,
-schema, or runtime error before starting Gold or Power BI.
+Create and execute `pl_transform_bronze_to_silver` using the checked-in build specification. After
+capturing the pipeline run evidence, decide whether the next portfolio increment is Gold or an
+extension of Silver scope.
