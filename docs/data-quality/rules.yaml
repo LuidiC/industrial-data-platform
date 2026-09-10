@@ -1,6 +1,48 @@
-catalog_version: "1.0.0"
+catalog_version: "1.1.0"
 description: Data quality rules for implemented synthetic Atlas Industrial source datasets.
 rules:
+  - id: DQ-CORE-001
+    domain: cross_domain
+    description: A field declared as required must contain a non-empty value.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-CORE-002
+    domain: cross_domain
+    description: A non-empty source value must be parseable as its declared type.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-CORE-003
+    domain: cross_domain
+    description: A value governed by a contract enumeration must belong to that enumeration after documented normalization.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-CORE-004
+    domain: cross_domain
+    description: A required reference must resolve to an accepted conformed parent record.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-CORE-005
+    domain: cross_domain
+    description: A business key must identify at most one accepted record in a Silver input or target table.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-CORE-006
+    domain: cross_domain
+    description: An interval end timestamp must be later than its start timestamp.
+    severity: error
+    disposition: quarantine
+
+  - id: DQ-CORE-007
+    domain: cross_domain
+    description: A numeric value must remain within the minimum and relational bounds declared by its contract.
+    severity: error
+    disposition: quarantine
+
   - id: DQ-PROD-001
     domain: production
     description: Production quantity must be greater than or equal to zero.
