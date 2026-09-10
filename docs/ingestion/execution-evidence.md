@@ -1,0 +1,66 @@
+# Phase 3 execution evidence
+
+This file records what was actually demonstrated in the Fabric tenant. It must not infer live
+success from repository artifacts or planned configuration.
+
+## Tenant execution on 2026-09-04
+
+| Check | Result | Evidence |
+|---|---|---|
+| SharePoint Online File PoC | Not executable; no pass claimed | No tenant site, library, folder, or representative source objects were supplied |
+| OneLake demo staging fallback | Demonstrated for MES | `transport_source=onelake_demo_staging`; 2025-01 through 2026-01 source files were read from `Files/_demo_source_staging/mes` and copied byte-for-byte to immutable Bronze batches |
+| `ingestion_audit` Delta table | Passed initialization | Notebook `a3f33829-2a79-460f-8b45-9cf25a355041` attached to `lh_bronze`; output `{"status":"READY","table":"ingestion_audit"}` at 2026-09-04 19:40:18 UTC |
+| Six pipeline items | Created; MES configured | `pl_ingest_mes` is implemented and validated; the other five source/orchestration items remain unchanged shells |
+| MES initial/rerun/new-month/conflict/replay | Passed in Fabric | Live run IDs and immutable Bronze/audit evidence are recorded below |
+| Quality XLSX | Local binary/structure validation passed; Fabric Copy pending | 72 `Inspections`, 12 `DefectTypes`, 8 `Targets`; SHA-256 `ab67c7d93e1f297c8c15dd5fb652507da0acb1c7f3252a2dae3a86608d104b13` |
+| Six technical PDFs | Local binary validation passed; Fabric Copy pending | Six unique PDF binaries, 11,744 bytes total, all with `%PDF-` signature; no OCR performed |
+| AtlasERP four-table snapshot | Pending gateway/source availability | Docker was unavailable and no gateway PostgreSQL connection or rotated reader credential was supplied; stable-source limitation remains documented |
+| MaintControl contract/fixtures | Local readiness passed; live snapshot pending | API contract includes bearer auth, pagination and inclusive occurrence-window filters; fixture counts are 180 work orders and 165 maintenance events |
+| MaintControl tunnel boundary | Preserved | No tunneling software installed or invoked; no REST connection created |
+
+## Created Fabric items
+
+| Item | Fabric item ID | State |
+|---|---|---|
+| `nb_bronze_ingestion_audit` | `a3f33829-2a79-460f-8b45-9cf25a355041` | Code loaded, parameter cell marked, Lakehouse attached, initialization passed |
+| `pl_ingest_atlas_erp` | `5746b71f-32dc-4b1b-bfe0-fe2bfef633f6` | Empty shell; not runnable |
+| `pl_ingest_mes` | `b9645bcc-46ac-42a7-9d91-60d085944a08` | Implemented, validated, and live acceptance-tested with OneLake demo staging |
+| `pl_ingest_quality` | `b2ffed46-38fb-4a67-97d6-7873a183979b` | Empty shell; not runnable |
+| `pl_ingest_maintcontrol` | `3d68708a-8a58-4311-a716-ff398027c748` | Empty shell; not runnable |
+| `pl_ingest_technical_documents` | `1cfe1200-0e62-49c9-8d38-f7522be548e9` | Empty shell; not runnable |
+| `pl_ingest_all_sources` | `559fcda5-e92b-4014-a381-3981fcb0c6fe` | Empty shell; not runnable |
+
+The workspace identity was enabled and granted only the Contributor workspace role. Notebook
+connection `cn_notebook_workspace_identity` (`d853a481-85b4-489d-bdb4-c44c2128d36c`) uses
+Workspace Identity authentication. Its isolated activity test succeeded as run
+`f819ac29-4aed-43f7-8eda-f7b6312c9956`. No service principal, application registration, client
+secret, or Key Vault was created.
+
+Local fixture checks remain reproducible validation evidence rather than substitutes for Fabric
+runs. MES now has the live evidence below. Quality, PDF, AtlasERP, and MaintControl still have no
+successful source-pipeline Bronze landing claimed here.
+
+## MES live acceptance on 2026-09-07
+
+| Scenario | Fabric run ID | Result and evidence |
+|---|---|---|
+| Initial 12-month load | `cd048f50-036e-49f9-803d-6598b6ab13f4` | Succeeded; 12 copies and 12 `SUCCEEDED` rows for 2025-01 through 2025-12 |
+| Identical rerun | `7b99834c-ee13-4e08-84d9-fd1aaf49399b` | Succeeded; 12 `SKIPPED_ALREADY_INGESTED`, zero copies |
+| New month 2026-01 | `b9b2ea0e-5f3f-47fe-add3-41a57857d100` | Succeeded; 13 candidates, 12 skips, exactly one new `SUCCEEDED` batch `b9b2ea0e-5f3f-47fe-add3-41a57857d100-202601`; source and destination SHA-256 `547647c0ee80861ed8635d837cb6a9ca87b521504a2c3ce3b14a6108c990370d` |
+| Controlled conflict, 2025-01 | `642ad6a3-6387-4694-8f73-4a7b4173e673` | Failed as designed; one `CONFLICT_SOURCE_CHANGED`, 12 skips, zero copies. The staged file was restored to 8,401 bytes and SHA-256 `9f415e92befc7b1cd3907da03875f83172235ced18eadef89bfa029f5ccadcd5` |
+| Explicit replay, 2025-01 | `abdb6f92-7e90-42d5-90d8-fe62ec8d8b2f` | Succeeded; one `SUCCEEDED_REPLAY` batch `abdb6f92-7e90-42d5-90d8-fe62ec8d8b2f-202501`, linked to original batch `cd048f50-036e-49f9-803d-6598b6ab13f4-202501`; both files have SHA-256 `9f415e92befc7b1cd3907da03875f83172235ced18eadef89bfa029f5ccadcd5` |
+
+After acceptance, MES Bronze contains 14 CSV files: 12 original 2025 batches, one normal 2026-01
+batch, and one replay batch. The staging folder contains 13 canonical source files.
+
+The audit status totals after these runs are 13 `SUCCEEDED`, 36
+`SKIPPED_ALREADY_INGESTED`, 37 `CONFLICT_SOURCE_CHANGED`, and one `SUCCEEDED_REPLAY`. Of the 37
+conflicts, exactly one is the controlled acceptance test above. The other 36 belong to diagnostic
+runs `2d18199e-7ed5-4bd0-b267-3f85f4062f4e`,
+`c4243b24-68dc-4dd9-831b-a684946d6fad`, and
+`4cd513e0-cd86-4238-a211-eb9288faf126`, performed while aligning the published notebook's hash
+behavior. They remain immutable historical evidence and must not be deleted, rewritten, or counted
+as the controlled conflict test.
+
+Update this table immediately after each portal run with UTC run time, Fabric run ID, counts, hashes,
+selected `transport_source`, and any sanitized error code. Do not store credentials or tokens.

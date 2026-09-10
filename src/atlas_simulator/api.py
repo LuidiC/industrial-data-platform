@@ -59,10 +59,13 @@ def create_app(data: GeneratedData, api_token: str = "local-development-token") 
 
     @app.get("/api/v1/work-orders", dependencies=[Depends(authenticate)])
     def work_orders(
+        occurred_from: datetime | None = None,
+        occurred_to: datetime | None = None,
         machine_id: str | None = Query(default=None, pattern=r"^MCH-\d{3}$"),
         cursor: str | None = None,
         page_size: int = Query(default=100, ge=1, le=500),
     ) -> dict:
+        validate_range(occurred_from, occurred_to)
         rows = (
             []
             if machine_id is not None and machine_id not in known_machine_ids
@@ -70,6 +73,9 @@ def create_app(data: GeneratedData, api_token: str = "local-development-token") 
                 row
                 for row in data.work_orders
                 if machine_id is None or row["machine_id"] == machine_id
+                if occurred_from is None
+                or datetime.fromisoformat(row["opened_at"]) >= occurred_from
+                if occurred_to is None or datetime.fromisoformat(row["opened_at"]) <= occurred_to
             ]
         )
         return response(

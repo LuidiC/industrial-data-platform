@@ -8,7 +8,8 @@ industrial data platform without real company data. The target platform is Micro
 The Fabric workspace `Industrial Data Platform - Lakehouse Analytics` and the Lakehouses
 `lh_bronze`, `lh_silver`, and `lh_gold` already exist and were created manually. Phase 1 added the
 repository and architectural foundation. Phase 2 implements the synthetic source ecosystem locally.
-Fabric ingestion, transformation, and serving models remain planned.
+Phase 3 implements file-first Bronze ingestion definitions and its audit control plane;
+Bronze-to-Silver and serving models remain outside the phase.
 
 ## Logical data flow
 
@@ -22,7 +23,7 @@ flowchart TB
         DOCS[Technical documents<br/>PDF]
     end
 
-    INGEST[Ingestion<br/>Planned]
+    INGEST[Phase 3 ingestion<br/>Six pipelines]
     BRONZE[(lh_bronze<br/>Source-faithful preservation)]
     SILVER[(lh_silver<br/>Validated and conformed)]
     QUARANTINE[(Quarantine<br/>Rejected records and reasons)]
@@ -52,11 +53,12 @@ flowchart TB
     GOLD --> WEB
 ```
 
-Technical PDFs pass through the same conceptual ingestion boundary as the other sources so they
+Technical PDFs pass through the same ingestion boundary as the other sources so they
 retain source metadata, batch tracking, auditability, ingestion controls, and replay context. They
 are preserved as unstructured Bronze assets and do not initially participate in the tabular
-Silver-to-Gold flow. No specific PDF ingestion technology has been selected. This boundary is
-intentional and may be revisited only through a future architectural decision.
+Silver-to-Gold flow. Phase 3 uses binary Copy with source/destination verification and no OCR or
+extraction. This boundary is intentional and may be revisited only through a future architectural
+decision.
 
 ## Layer responsibilities
 
@@ -72,8 +74,10 @@ such as:
 - `ingestion_timestamp`
 - `batch_id`
 
-Physical storage layout, partitioning, and file formats will be decided with the first ingestion
-implementation.
+Phase 3 lands source-faithful files beneath `Files/raw/<source>/<object>/`, partitions time-bearing
+sources by source period or snapshot/extraction date, and always creates an immutable `batch_id`
+directory. `ingestion_audit` is the only Phase 3 Delta table. See the
+[Phase 3 runbook](../ingestion/phase3-runbook.md) for exact paths and replay behavior.
 
 ### Silver
 
@@ -107,6 +111,7 @@ claims about a real facility.
 
 ## Explicitly deferred decisions
 
-Pandas versus Polars, API framework, Docker topology, physical partitioning, Gold dimensional
-modeling, and web application architecture remain undecided. They will be evaluated when a concrete
-phase requires them.
+Bronze-to-Silver implementation technology, Gold dimensional modeling, Power BI, production
+snapshot consistency, retention/SLOs, MaintControl tunnel provider, Fabric Git Integration, and web
+application architecture remain deferred. They will be evaluated only when a concrete phase or
+operational approval requires them.

@@ -9,13 +9,13 @@ Treat the repository and accepted ADRs as the source of truth.
 
 ## Current phase
 
-Phase 1 contains architecture, governance, standards, and repository validation only.
+Phase 1 foundations and Phase 2 synthetic sources are implemented. Phase 3 authorizes only
+file-first immutable Bronze ingestion, its `ingestion_audit` Delta table, six Fabric pipelines, and
+the supporting notebook, runbooks, fixtures, and tests.
 
-Do not describe planned capabilities as implemented.
-
-Do not add Phase 2+ components unless the active task explicitly authorizes them. This includes
-data generation, source services, ingestion, Fabric notebooks or pipelines, transformations,
-dimensional models, Power BI, web applications, Docker, and cloud infrastructure.
+Do not describe a Fabric resource or ingestion scenario as demonstrated without tenant execution
+evidence. Do not add Bronze-to-Silver, Silver-to-Gold, Power BI, OCR, CDC, mirroring, tunneling
+software, or later-phase work unless a new active task explicitly authorizes it.
 
 ## Repository map
 
@@ -27,6 +27,9 @@ dimensional models, Power BI, web applications, Docker, and cloud infrastructure
 - `docs/data-contracts/` contains the YAML convention, template, and limited examples.
 - `docs/data-quality/` defines rule IDs, quarantine, and the illustrative catalog.
 - `docs/observability/` defines the future execution and health model.
+- `docs/ingestion/` defines Phase 3 operations and records tenant execution evidence.
+- `fabric/` contains source-controlled notebook code and exact live-item build specifications; it
+  must not contain invented pipeline-export JSON.
 - `tests/repository/` validates repository conventions rather than business processing.
 
 Create new directories only when they contain an artifact required by the authorized phase.
