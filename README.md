@@ -44,8 +44,9 @@ foram criados manualmente.
   snapshots completos de AtlasERP/API e preservação binária de XLSX/PDF.
 - SharePoint Online File é preferencial somente após PoC no tenant; o fallback OneLake demo staging
   é sempre identificado corretamente em `transport_source`.
-- MaintControl está parametrizado para URL HTTPS/token futuros, mas a conexão ao vivo depende de
-  autorização separada do provedor de túnel.
+- O demo do MaintControl foi autorizado para Cloudflare Quick Tunnel efêmero, sempre com API em
+  loopback e bearer token fornecido apenas em runtime. A API local foi validada; o teste HTTPS e a
+  execução Fabric ainda não foram demonstrados.
 
 Resultados do tenant são registrados separadamente nas
 [evidências de execução da Phase 3](docs/ingestion/execution-evidence.md); implementação no
