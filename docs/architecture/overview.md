@@ -21,9 +21,10 @@ successfully executed in the Fabric tenant. Repeated execution preserved the Sil
 counts and deterministic quarantine state, providing tenant-side evidence of idempotent behavior
 for the current production slice.
 
-Phase 5 implements the source-controlled production Gold MVP with one event-grain fact and four
-dimensions. Its notebook and independent pipeline recipe exist in the repository, but the Gold
-artifacts have not yet been published or executed in Fabric.
+Phase 5 implements and demonstrates the source-controlled production Gold MVP with one event-grain
+fact and four dimensions. The notebook converged across two unchanged direct tenant executions,
+and the independent `pl_transform_silver_to_gold` pipeline was validated and successfully executed
+with pipeline Run ID propagated to `processing_run_id`.
 
 Quality, MaintControl, Technical Documents, Power BI, and other serving models remain outside the
 implemented tenant path.
@@ -155,8 +156,10 @@ remain semantic-model measures. Shift is a degenerate fact dimension. Production
 only for non-blocking alignment diagnostics; planned quantity, attainment, and OEE are excluded.
 
 The notebook validates source structure, keys, relationships, machine/line agreement, quantity
-semantics, and source totals before deterministic Delta overwrite. This implementation is not yet
-tenant execution evidence.
+semantics, and source totals before deterministic Delta overwrite. Tenant execution produced 339
+dates, 8 products, 12 machines, 3 production lines, and 540 production events, with 54,949 produced,
+1,070 rejected, and 53,879 accepted units. The observed order diagnostics keep planned quantity,
+attainment, and OEE outside the demonstrated scope.
 
 ## Workspace boundary
 
@@ -184,7 +187,7 @@ claims about a real facility.
 
 The currently demonstrated production path is:
 
-`AtlasERP / MES → Phase 3 Bronze ingestion → lh_bronze → Phase 4 Silver transformation → lh_silver`
+`AtlasERP / MES → Phase 3 Bronze ingestion → lh_bronze → Phase 4 Silver transformation → lh_silver → Phase 5 Gold transformation → lh_gold`
 
 Phase 3 provides source ingestion, immutable Bronze storage, ingestion audit, idempotency, replay,
 and source-level traceability.
@@ -207,11 +210,16 @@ and:
 This preserves execution-level traceability between the Fabric pipeline and the Silver processing
 run.
 
-The next implemented repository step, pending tenant execution, is:
+The demonstrated Gold transformation can be executed independently through:
 
-`lh_silver → nb_silver_to_gold_production → lh_gold`
+`pl_transform_silver_to_gold`
 
-Its independent planned pipeline is `pl_transform_silver_to_gold`.
+with:
+
+`processing_run_id = @pipeline().RunId`
+
+The accepted tenant evidence and exact diagnostics are recorded in the
+[Phase 5 handoff](../gold/phase5-handoff.md).
 
 ## Explicitly deferred decisions
 
