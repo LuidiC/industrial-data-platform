@@ -65,9 +65,22 @@ presented as proof that a Fabric run succeeded.
   demonstrating idempotency for the current AtlasERP + MES slice.
 - Quality, MaintControl, and Technical Documents intentionally remain outside this Silver MVP.
 
+### Implemented in the repository — Phase 5 production Gold
+
+- Minimal star schema with date, product, machine, and production-line dimensions.
+- `fact_production_event` at the explicit grain of one accepted Silver event.
+- Physically additive produced, rejected, and accepted quantities; rates and averages remain
+  semantic-layer measures.
+- PySpark notebook with pre-publish validation, non-blocking order-alignment diagnostics, and
+  deterministic Delta overwrite.
+- Manual specification for the independent `pl_transform_silver_to_gold` pipeline.
+- The Gold notebook and pipeline have not yet run in the tenant; there is currently no Phase 5
+  Fabric execution evidence.
+- OEE, planned quantity, and production attainment remain explicitly outside the MVP.
+
 ### Next increments
 
-- Minimal Gold production analytical model.
+- Publish and repeatedly validate Gold in the Fabric tenant.
 - Power BI semantic layer and production dashboard.
 - Later Silver extension for Quality, MaintControl, and Technical Document metadata.
 
@@ -126,6 +139,8 @@ Read the [complete architecture overview](docs/architecture/overview.md).
 - [Phase 3 execution evidence](docs/ingestion/execution-evidence.md)
 - [Phase 4A/4B production Silver slice](docs/silver/phase4-production-slice.md)
 - [Phase 4A/4B handoff and execution evidence](docs/silver/phase4-handoff.md)
+- [Phase 5 production Gold model](docs/gold/phase5-production-mvp.md)
+- [Phase 5 handoff](docs/gold/phase5-handoff.md)
 - [Agent and contributor guide](AGENTS.md)
 
 ## Local development

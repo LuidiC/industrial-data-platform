@@ -21,8 +21,12 @@ successfully executed in the Fabric tenant. Repeated execution preserved the Sil
 counts and deterministic quarantine state, providing tenant-side evidence of idempotent behavior
 for the current production slice.
 
-Quality, MaintControl, Technical Documents, Gold, Power BI, and other serving models remain outside
-this implemented Silver slice.
+Phase 5 implements the source-controlled production Gold MVP with one event-grain fact and four
+dimensions. Its notebook and independent pipeline recipe exist in the repository, but the Gold
+artifacts have not yet been published or executed in Fabric.
+
+Quality, MaintControl, Technical Documents, Power BI, and other serving models remain outside the
+implemented tenant path.
 
 ## Logical data flow
 
@@ -138,11 +142,21 @@ Quality, MaintControl, and Technical Documents remain outside the current Silver
 
 Gold exposes governed, business-oriented data and is not coupled exclusively to Power BI.
 
-The Gold dimensional model has not yet been implemented. Every future fact table must document its
-grain before implementation.
+The source-controlled Phase 5 production MVP defines:
 
-The next planned portfolio increment is a minimal production-oriented Gold model sufficient to
-support the first Power BI production dashboard.
+- `dim_date` at one operational business date;
+- `dim_product` at one current product;
+- `dim_machine` at one current machine;
+- `dim_production_line` at one current production line;
+- `fact_production_event` at one accepted Silver production event.
+
+The fact contains produced, rejected, and accepted quantities. Rates, event counts, and averages
+remain semantic-model measures. Shift is a degenerate fact dimension. Production orders are read
+only for non-blocking alignment diagnostics; planned quantity, attainment, and OEE are excluded.
+
+The notebook validates source structure, keys, relationships, machine/line agreement, quantity
+semantics, and source totals before deterministic Delta overwrite. This implementation is not yet
+tenant execution evidence.
 
 ## Workspace boundary
 
@@ -193,11 +207,17 @@ and:
 This preserves execution-level traceability between the Fabric pipeline and the Silver processing
 run.
 
+The next implemented repository step, pending tenant execution, is:
+
+`lh_silver → nb_silver_to_gold_production → lh_gold`
+
+Its independent planned pipeline is `pl_transform_silver_to_gold`.
+
 ## Explicitly deferred decisions
 
 The following decisions remain intentionally deferred until a concrete later phase requires them:
 
-- Gold dimensional modeling beyond the first minimal production model;
+- Gold dimensional modeling beyond the implemented event-grain production MVP;
 - Power BI semantic model design and report structure;
 - Silver implementation for Quality;
 - Silver implementation for MaintControl;

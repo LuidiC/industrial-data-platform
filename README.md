@@ -66,9 +66,22 @@ repositório não é apresentada como prova de execução bem-sucedida no Fabric
   demonstrando idempotência para o recorte AtlasERP + MES.
 - Quality, MaintControl e Technical Documents continuam intencionalmente fora deste MVP Silver.
 
+### Implementado no repositório — Phase 5 Gold de produção
+
+- Modelo estrela mínimo com dimensões de data, produto, máquina e linha de produção.
+- Fato `fact_production_event` no grão explícito de um evento Silver aceito.
+- Quantidades produzida, rejeitada e aceita fisicamente aditivas; taxas e médias permanecem
+  medidas da camada semântica.
+- Notebook PySpark com validação antes da publicação, diagnóstico não bloqueante de alinhamento de
+  ordens e overwrite Delta determinístico.
+- Especificação manual do pipeline independente `pl_transform_silver_to_gold`.
+- O notebook e o pipeline Gold ainda não foram executados no tenant; não há evidência Fabric da
+  Phase 5 neste momento.
+- OEE, quantidade planejada e atingimento de produção permanecem explicitamente fora do MVP.
+
 ### Próximos incrementos
 
-- Modelo Gold mínimo para análise de produção.
+- Publicação e validação repetida do Gold no tenant Fabric.
 - Camada semântica e dashboard de produção em Power BI.
 - Extensão posterior da Silver para Quality, MaintControl e metadados de Technical Documents.
 
@@ -127,6 +140,8 @@ Leia a [visão completa da arquitetura](docs/architecture/overview.md).
 - [Evidências de execução da Phase 3](docs/ingestion/execution-evidence.md)
 - [Recorte Silver de produção da Phase 4A/4B](docs/silver/phase4-production-slice.md)
 - [Handoff e evidências da Phase 4A/4B](docs/silver/phase4-handoff.md)
+- [Modelo Gold de produção da Phase 5](docs/gold/phase5-production-mvp.md)
+- [Handoff da Phase 5](docs/gold/phase5-handoff.md)
 - [Guia para agentes e contribuidores](AGENTS.md)
 
 ## Desenvolvimento local
