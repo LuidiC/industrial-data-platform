@@ -26,8 +26,10 @@ fact and four dimensions. The notebook converged across two unchanged direct ten
 and the independent `pl_transform_silver_to_gold` pipeline was validated and successfully executed
 with pipeline Run ID propagated to `processing_run_id`.
 
-Quality, MaintControl, Technical Documents, Power BI, and other serving models remain outside the
-implemented tenant path.
+Phase 6 implements and validates the production Power BI serving layer. The Direct Lake semantic
+model `sm_atlas_production` and one-page report `rpt_atlas_production_overview` complete the
+demonstrated Gold-to-Power-BI path. Quality, MaintControl, Technical Documents, and other serving
+models remain outside the implemented tenant path.
 
 ## Logical data flow
 
@@ -52,8 +54,8 @@ flowchart TB
 
     GOLD[(lh_gold<br/>Business serving layer)]
 
-    subgraph Consumers[Potential consumers]
-        POWERBI[Power BI]
+    subgraph Consumers[Serving and potential consumers]
+        POWERBI[Power BI<br/>Production Direct Lake implemented]
         SQL[SQL analytics]
         EXPORTS[Controlled exports]
         APIS[APIs]
@@ -161,6 +163,20 @@ dates, 8 products, 12 machines, 3 production lines, and 540 production events, w
 1,070 rejected, and 53,879 accepted units. The observed order diagnostics keep planned quantity,
 attainment, and OEE outside the demonstrated scope.
 
+### Power BI
+
+Phase 6 serves the five accepted Gold tables through the Direct Lake semantic model
+`sm_atlas_production`. `Date`, `Product`, `Machine`, and `Production Line` each filter `Production
+Events` through one active, single-direction, one-to-many relationship. Six measures cover
+produced, accepted, and rejected quantities, rejection rate, event count, and average produced per
+event.
+
+The Portuguese presentation-facing report `rpt_atlas_production_overview` provides one production
+overview page with five slicers, four KPI cards, and four analytical visuals. The validated
+unfiltered baseline is 54,949 produced, 1,070 rejected, 53,879 accepted, and 540 events. The current
+Power BI implementation does not extend to Quality, Maintenance, quarantine, planned quantity,
+attainment, or OEE.
+
 ## Workspace boundary
 
 The three Lakehouses remain in one Fabric workspace for the portfolio environment.
@@ -187,7 +203,7 @@ claims about a real facility.
 
 The currently demonstrated production path is:
 
-`AtlasERP / MES → Phase 3 Bronze ingestion → lh_bronze → Phase 4 Silver transformation → lh_silver → Phase 5 Gold transformation → lh_gold`
+`AtlasERP / MES → Phase 3 Bronze ingestion → lh_bronze → Phase 4 Silver transformation → lh_silver → Phase 5 Gold transformation → lh_gold → Phase 6 Direct Lake semantic model → Power BI production report`
 
 Phase 3 provides source ingestion, immutable Bronze storage, ingestion audit, idempotency, replay,
 and source-level traceability.
@@ -221,12 +237,15 @@ with:
 The accepted tenant evidence and exact diagnostics are recorded in the
 [Phase 5 handoff](../gold/phase5-handoff.md).
 
+The implemented Direct Lake model, report composition, and validated Power BI baseline are recorded
+in the [Phase 6 production dashboard](../power-bi/phase6-production-dashboard.md).
+
 ## Explicitly deferred decisions
 
 The following decisions remain intentionally deferred until a concrete later phase requires them:
 
 - Gold dimensional modeling beyond the implemented event-grain production MVP;
-- Power BI semantic model design and report structure;
+- Power BI models and report structures beyond the implemented production MVP;
 - Silver implementation for Quality;
 - Silver implementation for MaintControl;
 - Silver handling of Technical Document metadata;

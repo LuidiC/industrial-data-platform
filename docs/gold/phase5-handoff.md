@@ -8,10 +8,13 @@
 - Fabric pipeline `pl_transform_silver_to_gold`: created, validated with no errors, and
   successfully executed with one Notebook activity.
 - Tenant execution and idempotency evidence: accepted on 2026-09-10/11.
-- Power BI semantic model and report: not yet implemented.
+- Power BI semantic model and report: not yet implemented at the Phase 5 handoff; subsequently
+  implemented and validated in Phase 6.
 
 Phase 5 may now be described as demonstrated in Fabric for the approved Gold production MVP. This
-evidence does not extend to Power BI, planned-production metrics, OEE, or later domains.
+Phase 5 evidence does not itself extend to Power BI, planned-production metrics, OEE, or later
+domains. Phase 6 Power BI evidence is recorded separately in
+[`docs/power-bi/phase6-production-dashboard.md`](../power-bi/phase6-production-dashboard.md).
 
 ## Source-controlled artifacts
 

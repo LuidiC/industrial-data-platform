@@ -82,9 +82,22 @@ presented as proof that a Fabric run succeeded.
 - Tenant diagnostics confirmed that planned-production metrics are not semantically safe.
 - OEE, planned quantity, and production attainment remain explicitly outside the MVP.
 
+### Implemented and validated in Fabric — Phase 6 Power BI
+
+- Direct Lake semantic model `sm_atlas_production` over the five accepted Gold tables.
+- Four active, single-direction relationships to `Production Events`, with six measures in
+  `Production KPIs`.
+- Validated baseline of 54,949 produced, 53,879 accepted, and 1,070 rejected units across 540
+  events, with a displayed rejection rate of 1.95%.
+- One-page, Portuguese presentation-facing production report `rpt_atlas_production_overview` with
+  five slicers, four KPI cards, and four analytical visuals.
+- The `Sources → Bronze → Silver → Gold → Power BI` path is demonstrated in the tenant for the
+  production slice.
+
+See the [Phase 6 production dashboard](docs/power-bi/phase6-production-dashboard.md).
+
 ### Next increments
 
-- Power BI semantic layer and production dashboard.
 - Later Silver extension for Quality, MaintControl, and Technical Document metadata.
 
 ### Stretch goals
@@ -104,7 +117,8 @@ flowchart LR
     BRONZE --> SILVER[(lh_silver<br/>Validation and conformance)]
     SILVER --> QUARANTINE[(Quarantine)]
     SILVER --> GOLD[(lh_gold<br/>Business serving)]
-    GOLD --> CONSUMERS[Power BI · SQL · Exports · APIs]
+    GOLD --> POWERBI[Power BI Direct Lake<br/>Implemented for production]
+    GOLD -.-> CONSUMERS[SQL · Exports · APIs<br/>Planned]
 ```
 
 - **Bronze:** preserves source representation and ingestion metadata for traceability and
@@ -112,6 +126,8 @@ flowchart LR
 - **Silver:** applies types, normalization, deduplication, validation, integration, and conformance.
 - **Gold:** provides business-oriented data to governed consumers without an exclusive dependency
   on Power BI.
+- **Power BI:** demonstrates Direct Lake production serving; other domains and consumers remain
+  outside the implemented scope.
 
 PDFs also cross the conceptual ingestion boundary, preserving source metadata, batch tracking,
 auditability, and reprocessing. They are initially stored as unstructured Bronze-only data and do
@@ -144,6 +160,7 @@ Read the [complete architecture overview](docs/architecture/overview.md).
 - [Phase 4A/4B handoff and execution evidence](docs/silver/phase4-handoff.md)
 - [Phase 5 production Gold model](docs/gold/phase5-production-mvp.md)
 - [Phase 5 handoff](docs/gold/phase5-handoff.md)
+- [Phase 6 production dashboard](docs/power-bi/phase6-production-dashboard.md)
 - [Agent and contributor guide](AGENTS.md)
 
 ## Local development
