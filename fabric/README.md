@@ -15,8 +15,12 @@ fabricated Fabric export and contains no manually invented pipeline JSON.
 - `notebooks/nb_silver_to_gold_production.py` implements the validated event-grain production star
   schema in `lh_gold` using deterministic full overwrite.
 - `gold-pipeline-build-spec.md` is the manual build and validation recipe for the independent
-  `pl_transform_silver_to_gold` pipeline. The Gold notebook and pipeline have not yet been
-  published or executed in the tenant.
+  `pl_transform_silver_to_gold` pipeline. The Gold notebook and pipeline were published and
+  successfully validated in the tenant.
+
+The Phase 6 Direct Lake semantic model and Power BI report are live Fabric items rather than
+source-controlled exports. Their configuration and tenant evidence are recorded in
+[`docs/power-bi/phase6-production-dashboard.md`](../docs/power-bi/phase6-production-dashboard.md).
 
 Native Fabric Git Integration is deliberately not configured. Repository artifacts are
 therefore maintained alongside, but are not presented as exports of, the live Fabric items.

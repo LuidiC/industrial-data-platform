@@ -83,9 +83,22 @@ repositório não é apresentada como prova de execução bem-sucedida no Fabric
 - Os diagnósticos do tenant confirmaram que métricas planejadas não são semanticamente seguras.
 - OEE, quantidade planejada e atingimento de produção permanecem explicitamente fora do MVP.
 
+### Implementado e validado no Fabric — Phase 6 Power BI
+
+- Modelo semântico `sm_atlas_production` em Direct Lake sobre as cinco tabelas Gold aceitas.
+- Quatro relacionamentos ativos e unidirecionais para `Production Events`, com seis medidas em
+  `Production KPIs`.
+- Baseline validado de 54.949 unidades produzidas, 53.879 aceitas, 1.070 rejeitadas e 540 eventos,
+  com taxa de rejeição exibida de 1,95%.
+- Relatório `rpt_atlas_production_overview` com uma página de produção voltada à apresentação em
+  português, cinco slicers, quatro cartões KPI e quatro visuais analíticos.
+- O caminho `Fontes → Bronze → Silver → Gold → Power BI` está demonstrado no tenant para o recorte
+  de produção.
+
+Consulte o [dashboard de produção da Phase 6](docs/power-bi/phase6-production-dashboard.md).
+
 ### Próximos incrementos
 
-- Camada semântica e dashboard de produção em Power BI.
 - Extensão posterior da Silver para Quality, MaintControl e metadados de Technical Documents.
 
 ### Stretch goals
@@ -105,7 +118,8 @@ flowchart LR
     BRONZE --> SILVER[(lh_silver<br/>Validação e conformidade)]
     SILVER --> QUARANTINE[(Quarantine)]
     SILVER --> GOLD[(lh_gold<br/>Serving de negócio)]
-    GOLD --> CONSUMERS[Power BI · SQL · Exportações · APIs]
+    GOLD --> POWERBI[Power BI em Direct Lake<br/>Produção implementada]
+    GOLD -.-> CONSUMERS[SQL · Exportações · APIs<br/>Planejados]
 ```
 
 - **Bronze:** preserva a representação da fonte e metadados de ingestão para rastreabilidade e
@@ -113,6 +127,8 @@ flowchart LR
 - **Silver:** aplica tipos, normalização, deduplicação, validação, integração e conformidade.
 - **Gold:** fornece dados orientados ao negócio para consumidores governados, sem dependência
   exclusiva de Power BI.
+- **Power BI:** demonstra o serving de produção em Direct Lake; outros domínios e consumidores
+  continuam fora do escopo implementado.
 
 Os PDFs também atravessam o limite conceitual de ingestão, preservando metadados de origem, lote,
 auditoria e reprocessamento. Eles são inicialmente armazenados como dados não estruturados apenas
@@ -145,6 +161,7 @@ Leia a [visão completa da arquitetura](docs/architecture/overview.md).
 - [Handoff e evidências da Phase 4A/4B](docs/silver/phase4-handoff.md)
 - [Modelo Gold de produção da Phase 5](docs/gold/phase5-production-mvp.md)
 - [Handoff da Phase 5](docs/gold/phase5-handoff.md)
+- [Dashboard de produção da Phase 6](docs/power-bi/phase6-production-dashboard.md)
 - [Guia para agentes e contribuidores](AGENTS.md)
 
 ## Desenvolvimento local
