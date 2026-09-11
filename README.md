@@ -66,9 +66,25 @@ repositório não é apresentada como prova de execução bem-sucedida no Fabric
   demonstrando idempotência para o recorte AtlasERP + MES.
 - Quality, MaintControl e Technical Documents continuam intencionalmente fora deste MVP Silver.
 
+### Implementado e aceito no Fabric — Phase 5 Gold de produção
+
+- Modelo estrela mínimo com dimensões de data, produto, máquina e linha de produção.
+- Fato `fact_production_event` no grão explícito de um evento Silver aceito.
+- Quantidades produzida, rejeitada e aceita fisicamente aditivas; taxas e médias permanecem
+  medidas da camada semântica.
+- Notebook PySpark com validação antes da publicação, diagnóstico não bloqueante de alinhamento de
+  ordens e overwrite Delta determinístico.
+- Notebook `nb_silver_to_gold_production` publicado e executado duas vezes sem alteração, com
+  convergência das cinco tabelas Gold.
+- Pipeline independente `pl_transform_silver_to_gold` criado, validado e executado com sucesso no
+  Fabric; o `processing_run_id` recebeu dinamicamente o Run ID do pipeline.
+- O estado aceito contém 339 datas, 8 produtos, 12 máquinas, 3 linhas e 540 eventos, reconciliando
+  54.949 unidades produzidas, 1.070 rejeitadas e 53.879 aceitas.
+- Os diagnósticos do tenant confirmaram que métricas planejadas não são semanticamente seguras.
+- OEE, quantidade planejada e atingimento de produção permanecem explicitamente fora do MVP.
+
 ### Próximos incrementos
 
-- Modelo Gold mínimo para análise de produção.
 - Camada semântica e dashboard de produção em Power BI.
 - Extensão posterior da Silver para Quality, MaintControl e metadados de Technical Documents.
 
@@ -127,6 +143,8 @@ Leia a [visão completa da arquitetura](docs/architecture/overview.md).
 - [Evidências de execução da Phase 3](docs/ingestion/execution-evidence.md)
 - [Recorte Silver de produção da Phase 4A/4B](docs/silver/phase4-production-slice.md)
 - [Handoff e evidências da Phase 4A/4B](docs/silver/phase4-handoff.md)
+- [Modelo Gold de produção da Phase 5](docs/gold/phase5-production-mvp.md)
+- [Handoff da Phase 5](docs/gold/phase5-handoff.md)
 - [Guia para agentes e contribuidores](AGENTS.md)
 
 ## Desenvolvimento local
